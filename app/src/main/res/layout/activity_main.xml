@@ -22,27 +22,44 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="31dp"
         android:layout_marginTop="29dp"
-        android:id="@+id/ScreenToggleButton"
+        android:id="@+id/ScreenSensorToggleButton"
         android:layout_below="@+id/textView"
         android:layout_alignParentEnd="true" />
-
-    <TextView
-        android:text="Screen ON/OFF"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/ScreenSensor"
-        android:layout_alignBaseline="@+id/ScreenToggleButton"
-        android:layout_alignBottom="@+id/ScreenToggleButton"
-        android:layout_alignParentStart="true"
-        android:layout_marginStart="16dp" />
 
     <Button
         android:text="Print Database"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_toEndOf="@+id/ScreenSensor"
+        android:layout_toEndOf="@+id/ScreenSensorTextView"
         android:layout_marginBottom="57dp"
         android:id="@+id/printDatabase" />
+
+    <ToggleButton
+        android:text="ToggleButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/CallSensorToggleButton"
+        android:layout_below="@+id/ScreenSensorToggleButton"
+        android:layout_alignStart="@+id/ScreenSensorToggleButton" />
+
+    <TextView
+        android:text="Screen Sensor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/ScreenSensorTextView"
+        android:layout_marginStart="19dp"
+        android:layout_alignBaseline="@+id/ScreenSensorToggleButton"
+        android:layout_alignBottom="@+id/ScreenSensorToggleButton"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:text="Call Sensor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/CallSensorTextView"
+        android:layout_alignBaseline="@+id/CallSensorToggleButton"
+        android:layout_alignBottom="@+id/CallSensorToggleButton"
+        android:layout_alignStart="@+id/ScreenSensorTextView" />
 
 </RelativeLayout>

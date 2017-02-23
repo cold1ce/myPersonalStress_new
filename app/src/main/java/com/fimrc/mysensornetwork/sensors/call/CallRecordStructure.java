@@ -1,4 +1,4 @@
-package com.fimrc.mysensornetwork.sensors.screen;
+package com.fimrc.mysensornetwork.sensors.call;
 
 import com.fimrc.sensorfusionframework.persistence.container.SensorRecord;
 import com.fimrc.sensorfusionframework.persistence.structure.SensorRecordStructure;
@@ -8,14 +8,15 @@ import java.util.Arrays;
 import java.util.Iterator;
 
 /**
- * Created by Sven on 22.02.2017.
+ * Created by Sven on 23.02.2017.
  */
 
-public class ScreenRecordStructure extends SensorRecordStructure {
+public class CallRecordStructure extends SensorRecordStructure {
 
-    public ScreenRecordStructure(){
+    public CallRecordStructure(){
         super(new ArrayList<String>(Arrays.asList(
-                "event"
+                "callee",
+                "caller"
         )));
     }
 

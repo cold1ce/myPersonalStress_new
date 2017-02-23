@@ -27,11 +27,8 @@ public class ScreenController extends BroadcastReceiver{
         Date date = new Date(System.currentTimeMillis());
         SensorRecord record = new SensorRecord(module.getNextIndex(), date , structure);
         if(action.equals(Intent.ACTION_SCREEN_ON)){
-            System.out.println("RECEIVE: SCREEN ON");
             record.addData("event", "SCREEN ON");
-            record.addData("event2", "test");
         }else if(action.equals(Intent.ACTION_SCREEN_OFF)) {
-            System.out.println("RECEIVE: SCREEN OFF");
             record.addData("event", "SCREEN OFF");
         }
         module.log(record);

@@ -5,23 +5,23 @@ import java.util.Iterator;
 import java.util.List;
 
 
-public class mySensorManager implements Iterable<SensorModule> {
-    private static mySensorManager unique = null;
+public class SensorManager implements Iterable<SensorModule> {
+    private static SensorManager unique = null;
     private List<SensorModule> sensorList;
 
     /**
      *  Singleton constructor
      */
-    private mySensorManager() {
+    private SensorManager() {
         sensorList = new ArrayList<>();
     }
 
     /**
      * @return SensorManager / If no SensorManager exists: null
      */
-    public static mySensorManager instance() {
+    public static SensorManager instance() {
         if (unique == null) {
-            return unique = new mySensorManager();
+            return unique = new SensorManager();
         } else {
             return unique;
         }

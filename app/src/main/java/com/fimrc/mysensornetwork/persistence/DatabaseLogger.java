@@ -40,7 +40,6 @@ public class DatabaseLogger extends PersistenceLogger {
         }
     }
 
-
     @Override
     public Iterator<SensorRecord> readAllRecords(SensorRecordStructure structure) {
         return null;
@@ -60,7 +59,7 @@ public class DatabaseLogger extends PersistenceLogger {
         StringBuilder values = new StringBuilder();
         Date timestamp = record.getTimestamp();
         Format format = new SimpleDateFormat("yyyy-MM-dd  HH:mm:ss");
-        sb.append("INSERT INTO "+ sqLiteHelper.TABLE_NAME+" ("+sqLiteHelper.COLUMN_TIMESTAMP);
+        sb.append("INSERT INTO "+ sqLiteHelper.TableName+" ("+sqLiteHelper.COLUMN_TIMESTAMP);
         int i = 0;
         for(String s : structureList){
             if(i < line.size() && line.get(i) != null) {
@@ -87,7 +86,7 @@ public class DatabaseLogger extends PersistenceLogger {
 
     public void print(){
         SQLiteDatabase database = sqLiteHelper.getDatabase();
-        String SQL = "SELECT * FROM "+sqLiteHelper.TABLE_NAME;
+        String SQL = "SELECT * FROM "+sqLiteHelper.TableName;
         List<String> structureList = structure.getStructure();
         Cursor c = database.rawQuery(SQL,null);
         if(c.moveToFirst()){

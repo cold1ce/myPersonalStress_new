@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 
+import com.fimrc.mysensornetwork.persistence.DatabaseLogger;
 import com.fimrc.sensorfusionframework.persistence.PersistenceLogger;
 import com.fimrc.sensorfusionframework.persistence.structure.SensorRecordStructure;
 import com.fimrc.sensorfusionframework.sensors.SensorModule;
@@ -16,13 +17,13 @@ public class ScreenModule extends SensorModule {
 
     private ScreenController controller;
     private Context context;
-    private PersistenceLogger logger;
+    private DatabaseLogger logger;
     private SensorRecordStructure structure;
 
     public ScreenModule(Context context, PersistenceLogger logger, SensorRecordStructure structure){
         super(logger, structure);
         this.context = context;
-        this.logger = logger;
+        this.logger = (DatabaseLogger)logger;
         this.structure = structure;
         controller = new ScreenController(this);
     }
@@ -40,5 +41,9 @@ public class ScreenModule extends SensorModule {
     public boolean deactivateSensor() {
         context.unregisterReceiver(controller);
         return false;
+    }
+
+    public void printDatabase(){
+        logger.print();
     }
 }
