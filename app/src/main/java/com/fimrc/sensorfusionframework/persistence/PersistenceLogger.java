@@ -12,19 +12,13 @@ import java.util.concurrent.Semaphore;
 
 public abstract class PersistenceLogger implements Runnable {
 
-    private volatile ConcurrentLinkedQueue<SensorRecord> bufferQueue;
-    protected Semaphore mutex;
-    private volatile long currentIndex;
+    private volatile ConcurrentLinkedQueue<SensorRecord> bufferQueue = new ConcurrentLinkedQueue<SensorRecord>();;
+    protected Semaphore mutex = new Semaphore(1);
+    private volatile long currentIndex = 0;;
     private volatile boolean running = true;
 
-    /**
-     * @param args Arguments for implemented initialize Method
-     */
-    public void initialize(Context context) {
-        currentIndex = 0;
-        bufferQueue = new ConcurrentLinkedQueue<SensorRecord>();
-        mutex = new Semaphore(1);
-    }
+
+    public abstract void initialize(Object[] array);
 
     /**
      *  run Thread for the PersistenceLogger

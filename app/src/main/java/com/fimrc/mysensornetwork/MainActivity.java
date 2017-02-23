@@ -26,9 +26,10 @@ public class MainActivity extends AppCompatActivity {
         System.out.println("START");
         //SensorManager androidSensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 
-        logger = new DatabaseLogger();
-        logger.initialize(this.getBaseContext());
         structure = new ScreenRecordStructure();
+        logger = new DatabaseLogger();
+        Object[] array = {"ScreenSensor", structure, this.getBaseContext()};
+        logger.initialize(array);
         module = new ScreenModule(this.getBaseContext(), logger, structure);
         module.startLogging();
 

@@ -15,7 +15,8 @@ public class ScreenRecordStructure extends SensorRecordStructure {
 
     public ScreenRecordStructure(){
         super(new ArrayList<String>(Arrays.asList(
-                "event"
+                "event",
+                "event2"
         )));
     }
 

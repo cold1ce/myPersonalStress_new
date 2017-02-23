@@ -14,6 +14,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -23,26 +24,25 @@ import java.util.Locale;
 public class DatabaseLogger extends PersistenceLogger {
 
     private mySQLiteHelper sqLiteHelper;
-    /*
-    public DatabaseLogger(Context context){
-        super();
-        sqLiteHelper = sqLiteHelper.getInstance(context);
-    }
-    */
+    private SensorRecordStructure structure;
+    private Context context;
+
     @Override
-    public void initialize(Context context){
+    public void initialize(Object[] array){
         try{
-            super.initialize(context);
-            sqLiteHelper = sqLiteHelper.getInstance(context);
+            String sensorName = array[0].toString();
+            this.structure = (SensorRecordStructure)array[1];
+            this.context = (Context)array[2];
+            sqLiteHelper = new mySQLiteHelper(sensorName, structure, context);
             sqLiteHelper.cleanDatabase();
         }catch(Exception e){
             e.printStackTrace();
         }
     }
 
+
     @Override
     public Iterator<SensorRecord> readAllRecords(SensorRecordStructure structure) {
-        SQLiteDatabase database = sqLiteHelper.getDatabase();
         return null;
     }
 
@@ -55,19 +55,21 @@ public class DatabaseLogger extends PersistenceLogger {
     protected void log(SensorRecord record) {
         SQLiteDatabase database = sqLiteHelper.getDatabase();
         ArrayList<String> line = convertSensorRecord(record);
+        List<String> structureList = structure.getStructure();
         StringBuilder sb = new StringBuilder();
+        StringBuilder values = new StringBuilder();
         Date timestamp = record.getTimestamp();
         Format format = new SimpleDateFormat("yyyy-MM-dd  HH:mm:ss");
-        sb.append("INSERT INTO "+ sqLiteHelper.TABLE_SENSORDATA +" VALUES ('" + record.getID() + "', '" + format.format(timestamp)+"', 'ScreenSensor'");
-        for(int i = 0; i<9;i++){
-            sb.append(", '");
-            if(i<line.size())
-                sb.append(line.get(i));
-            else
-                sb.append(" ");
-            sb.append("'");
+        sb.append("INSERT INTO "+ sqLiteHelper.TABLE_NAME+" ("+sqLiteHelper.COLUMN_TIMESTAMP);
+        int i = 0;
+        for(String s : structureList){
+            if(i < line.size() && line.get(i) != null) {
+                sb.append("," + s);
+                values.append(",'" + line.get(i) + "'");
+                i++;
+            }
         }
-        sb.append(")");
+        sb.append(") VALUES ('" + format.format(timestamp)+"'"+values.toString()+")");
         System.out.println(sb.toString());
         database.execSQL(sb.toString());
     }
@@ -85,23 +87,20 @@ public class DatabaseLogger extends PersistenceLogger {
 
     public void print(){
         SQLiteDatabase database = sqLiteHelper.getDatabase();
-        String SQL = "SELECT * FROM "+sqLiteHelper.TABLE_SENSORDATA;
+        String SQL = "SELECT * FROM "+sqLiteHelper.TABLE_NAME;
+        List<String> structureList = structure.getStructure();
         Cursor c = database.rawQuery(SQL,null);
         if(c.moveToFirst()){
             do{
-                String id = c.getString(0);
-                String ts = c.getString(1);
-                String sensor = c.getString(2);
-                String column1 = c.getString(3);
-                String column2 = c.getString(4);
-                String column3 = c.getString(5);
-                String column4 = c.getString(6);
-                String column5 = c.getString(7);
-                String column6 = c.getString(8);
-                String column7 = c.getString(9);
-                String column8 = c.getString(10);
-                String column9 = c.getString(11);
-                System.out.println(id+" "+ts+" "+sensor+" "+column1+" "+column2+" "+column3+" "+column4+" "+column5+" "+column6+" "+column7+" "+column8+" "+column9);
+                StringBuilder line = new StringBuilder();
+                line.append(c.getString(0));
+                line.append(" | "+c.getString(1));
+                int i = 2;
+                for(String s : structureList){
+                    line.append(" | "+c.getString(i));
+                    i++;
+                }
+                System.out.println(line.toString());
             }while(c.moveToNext());
         }
         c.close();
