@@ -1,4 +1,4 @@
-package com.fimrc.mysensornetwork.sensors.screen;
+package com.fimrc.mysensornetwork.sensors.event.screen;
 
 import com.fimrc.sensorfusionframework.persistence.container.SensorRecord;
 import com.fimrc.sensorfusionframework.persistence.structure.SensorRecordStructure;
@@ -15,7 +15,8 @@ public class ScreenRecordStructure extends SensorRecordStructure {
 
     public ScreenRecordStructure(){
         super(new ArrayList<String>(Arrays.asList(
-                "event"
+                "event",
+                "event2"
         )));
     }
 

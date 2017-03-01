@@ -10,12 +10,6 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.fimrc.mysensornetwork.MainActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello World! :-))"
-        android:id="@+id/textView" />
-
     <ToggleButton
         android:text="ToggleButton"
         android:layout_width="wrap_content"
@@ -61,5 +55,22 @@
         android:layout_alignBaseline="@+id/CallSensorToggleButton"
         android:layout_alignBottom="@+id/CallSensorToggleButton"
         android:layout_alignStart="@+id/ScreenSensorTextView" />
+
+    <TextView
+        android:text="AudioSensor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/CallSensorToggleButton"
+        android:layout_alignStart="@+id/CallSensorTextView"
+        android:layout_marginTop="23dp"
+        android:id="@+id/AudioSensor" />
+
+    <ToggleButton
+        android:text="ToggleButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/CallSensorToggleButton"
+        android:layout_alignStart="@+id/CallSensorToggleButton"
+        android:id="@+id/AudioSensorToggleButton" />
 
 </RelativeLayout>

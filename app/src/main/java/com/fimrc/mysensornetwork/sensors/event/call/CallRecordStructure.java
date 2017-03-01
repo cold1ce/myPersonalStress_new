@@ -1,4 +1,4 @@
-package com.fimrc.mysensornetwork.sensors.call;
+package com.fimrc.mysensornetwork.sensors.event.call;
 
 import com.fimrc.sensorfusionframework.persistence.container.SensorRecord;
 import com.fimrc.sensorfusionframework.persistence.structure.SensorRecordStructure;

@@ -1,4 +1,4 @@
-package com.fimrc.mysensornetwork.sensors.screen;
+package com.fimrc.mysensornetwork.sensors.event.screen;
 
 import android.content.Context;
 import android.content.Intent;
