@@ -16,15 +16,9 @@ import com.fimrc.sensorfusionframework.sensors.SensorModule;
 public class ScreenModule extends SensorModule {
 
     private ScreenController controller;
-    private Context context;
-    private DatabaseLogger logger;
-    private SensorRecordStructure structure;
 
     public ScreenModule(Context context, PersistenceLogger logger, SensorRecordStructure structure){
-        super(logger, structure);
-        this.context = context;
-        this.logger = (DatabaseLogger)logger;
-        this.structure = structure;
+        super(context, logger, structure);
         controller = new ScreenController(this);
     }
 
@@ -43,7 +37,4 @@ public class ScreenModule extends SensorModule {
         return false;
     }
 
-    public void printDatabase(){
-        logger.print();
-    }
 }

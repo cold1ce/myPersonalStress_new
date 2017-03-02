@@ -1,27 +1,28 @@
-package com.fimrc.mysensornetwork.sensors.time.audio;
+package com.fimrc.mysensornetwork.sensors.time.light;
 
 import android.content.Context;
 import android.content.IntentFilter;
+
 import com.fimrc.sensorfusionframework.persistence.PersistenceLogger;
 import com.fimrc.sensorfusionframework.persistence.structure.SensorRecordStructure;
 import com.fimrc.sensorfusionframework.sensors.SensorModule;
 
 /**
- * Created by Sven on 24.02.2017.
+ * Created by Sven on 02.03.2017.
  */
 
-public class AudioModule extends SensorModule {
+public class LightModule extends SensorModule {
 
-    private AudioController controller;
+    private LightController controller;
 
-    public AudioModule(Context context, PersistenceLogger logger, SensorRecordStructure structure){
+    public LightModule(Context context, PersistenceLogger logger, SensorRecordStructure structure){
         super(context, logger, structure);
-        controller = new AudioController(this);
+        controller = new LightController(this);
     }
 
     @Override
     public boolean activateSensor() {
-        String filterName = "AudioSensor";
+        String filterName = "LightSensor";
         context.registerReceiver(controller, new IntentFilter(filterName));
         controller.setAlarm(context, 60, filterName);
         return true;

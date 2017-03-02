@@ -17,15 +17,9 @@ import com.fimrc.sensorfusionframework.sensors.SensorModule;
 public class CallModule extends SensorModule {
 
     private CallController controller;
-    private Context context;
-    private DatabaseLogger logger;
-    private CallRecordStructure structure;
 
     public CallModule(Context context, PersistenceLogger logger, SensorRecordStructure structure){
-        super(logger, structure);
-        this.context = context;
-        this.logger = (DatabaseLogger)logger;
-        this.structure = (CallRecordStructure)structure;
+        super(context, logger, structure);
         controller = new CallController(this);
     }
 

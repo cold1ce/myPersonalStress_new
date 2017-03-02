@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.telephony.TelephonyManager;
 
 import com.fimrc.sensorfusionframework.persistence.container.SensorRecord;
+import com.fimrc.sensorfusionframework.sensors.SensorEventController;
 
 import java.util.Date;
 
@@ -14,14 +15,10 @@ import java.util.Date;
  * Created by Sven on 23.02.2017.
  */
 
-public class CallController extends BroadcastReceiver{
-
-    private CallModule module;
-    private CallRecordStructure structure;
+public class CallController extends SensorEventController{
 
     public CallController(CallModule module){
-        this.module = module;
-        structure = (CallRecordStructure)module.getStructure();
+        super(module);
     }
 
     @Override

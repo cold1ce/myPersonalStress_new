@@ -1,25 +1,21 @@
 package com.fimrc.mysensornetwork.sensors.event.screen;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import com.fimrc.sensorfusionframework.persistence.container.SensorRecord;
+import com.fimrc.sensorfusionframework.sensors.SensorEventController;
+
 import java.util.Date;
 
 /**
  * Created by Sven on 22.02.2017.
  */
 
-public class ScreenController extends BroadcastReceiver{
-
-    private ScreenModule module;
-    private ScreenRecordStructure structure;
+public class ScreenController extends SensorEventController{
 
     public ScreenController(ScreenModule module){
-        this.module = module;
-        structure = (ScreenRecordStructure)module.getStructure();
+        super(module);
     }
-
 
     @Override
     public void onReceive(Context context, Intent intent) {

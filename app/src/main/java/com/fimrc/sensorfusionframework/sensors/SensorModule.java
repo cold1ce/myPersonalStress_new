@@ -1,5 +1,7 @@
 package com.fimrc.sensorfusionframework.sensors;
 
+import android.content.Context;
+
 import com.fimrc.sensorfusionframework.persistence.PersistenceLogger;
 import com.fimrc.sensorfusionframework.persistence.container.SensorRecord;
 import com.fimrc.sensorfusionframework.persistence.structure.SensorRecordStructure;
@@ -11,16 +13,18 @@ public abstract class SensorModule {
 
     private PersistenceLogger logger;
     private final SensorRecordStructure structure;
-    protected boolean active;
+    protected Context context;
+    private boolean active;
     private Thread loggingThread;
 
     /**
      * @param logger    Implemented PersistenceLogger class where this Sensor will log
      * @param structure SensorRecordStructure which implements the structure for this Sensor
      */
-    public SensorModule(PersistenceLogger logger, SensorRecordStructure structure) {
+    public SensorModule(Context context, PersistenceLogger logger, SensorRecordStructure structure) {
         setLogger(logger);
         this.structure = structure;
+        this.context = context;
     }
 
     /**

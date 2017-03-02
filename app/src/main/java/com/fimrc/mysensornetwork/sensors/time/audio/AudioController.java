@@ -6,7 +6,7 @@ import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
 
-import com.fimrc.sensorfusionframework.sensors.TimeSensorController;
+import com.fimrc.sensorfusionframework.sensors.SensorTimeController;
 import com.fimrc.sensorfusionframework.persistence.container.SensorRecord;
 
 import java.util.Date;
@@ -15,10 +15,8 @@ import java.util.Date;
  * Created by Sven on 24.02.2017.
  */
 
-public class AudioController extends TimeSensorController {
+public class AudioController extends SensorTimeController {
 
-    private AudioModule module;
-    private AudioRecordStructure structure;
     private final int CENTRE_POINT = 32768;
     private final int AA_adjust = 3;
     int sample_rate = 8000;
@@ -27,8 +25,7 @@ public class AudioController extends TimeSensorController {
     short[] output = null;
 
     public AudioController(AudioModule module){
-        this.module = module;
-        structure = (AudioRecordStructure)module.getStructure();
+        super(module);
 
         boolean buffer_error = false;
 

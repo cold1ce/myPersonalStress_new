@@ -6,13 +6,23 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
+import com.fimrc.sensorfusionframework.persistence.structure.SensorRecordStructure;
+
 import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Sven on 27.02.2017.
  */
 
-public abstract class TimeSensorController extends BroadcastReceiver {
+public abstract class SensorTimeController extends BroadcastReceiver {
+
+    protected SensorModule module;
+    protected SensorRecordStructure structure;
+
+    public SensorTimeController(SensorModule module){
+        this.module = module;
+        structure = module.getStructure();
+    }
 
     public void setAlarm(Context context, long intervalInSeconds, String FilterName ) {
         AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);

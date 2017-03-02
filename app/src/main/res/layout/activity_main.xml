@@ -10,67 +10,83 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.fimrc.mysensornetwork.MainActivity">
 
-    <ToggleButton
-        android:text="ToggleButton"
+    <TextView
+        android:text="TimeSensors"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="31dp"
-        android:layout_marginTop="29dp"
-        android:id="@+id/ScreenSensorToggleButton"
-        android:layout_below="@+id/textView"
+        android:id="@+id/TimeSensorsTextView"
+        android:layout_alignBaseline="@+id/EventSensorTextView"
+        android:layout_alignBottom="@+id/EventSensorTextView"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="44dp" />
+
+    <Switch
+        android:text="AudioSensor  "
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/AudioSensorSwitch"
+        android:checked="false"
+        android:splitTrack="false"
+        android:switchMinWidth="50dp"
+        android:layout_alignBaseline="@+id/ScreenSensorSwitch"
+        android:layout_alignBottom="@+id/ScreenSensorSwitch"
         android:layout_alignParentEnd="true" />
 
-    <Button
-        android:text="Print Database"
+    <Switch
+        android:text="CallSensor  "
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_toEndOf="@+id/ScreenSensorTextView"
-        android:layout_marginBottom="57dp"
-        android:id="@+id/printDatabase" />
+        android:id="@+id/CallSensorSwitch"
+        android:checked="false"
+        android:splitTrack="false"
+        android:switchMinWidth="50dp"
+        android:layout_below="@+id/ScreenSensorSwitch"
+        android:layout_alignEnd="@+id/ScreenSensorSwitch"
+        android:layout_marginTop="14dp" />
 
-    <ToggleButton
-        android:text="ToggleButton"
+    <Switch
+        android:text="GPSSensor  "
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/CallSensorToggleButton"
-        android:layout_below="@+id/ScreenSensorToggleButton"
-        android:layout_alignStart="@+id/ScreenSensorToggleButton" />
+        android:id="@+id/GPSSensorSwitch"
+        android:checked="false"
+        android:splitTrack="false"
+        android:switchMinWidth="50dp"
+        android:layout_alignBaseline="@+id/CallSensorSwitch"
+        android:layout_alignBottom="@+id/CallSensorSwitch"
+        android:layout_alignParentEnd="true" />
 
-    <TextView
-        android:text="Screen Sensor"
+    <Switch
+        android:text="ScreenSensor  "
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/ScreenSensorTextView"
-        android:layout_marginStart="19dp"
-        android:layout_alignBaseline="@+id/ScreenSensorToggleButton"
-        android:layout_alignBottom="@+id/ScreenSensorToggleButton"
+        android:layout_marginTop="17dp"
+        android:id="@+id/ScreenSensorSwitch"
+        android:checked="false"
+        android:splitTrack="false"
+        android:switchMinWidth="50dp"
+        android:layout_below="@+id/EventSensorTextView"
         android:layout_alignParentStart="true" />
 
     <TextView
-        android:text="Call Sensor"
+        android:text="EventSensors"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/CallSensorTextView"
-        android:layout_alignBaseline="@+id/CallSensorToggleButton"
-        android:layout_alignBottom="@+id/CallSensorToggleButton"
-        android:layout_alignStart="@+id/ScreenSensorTextView" />
+        android:id="@+id/EventSensorTextView"
+        android:layout_marginTop="18dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignStart="@+id/CallSensorSwitch" />
 
-    <TextView
-        android:text="AudioSensor"
+    <Switch
+        android:text="LightSensor  "
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/CallSensorToggleButton"
-        android:layout_alignStart="@+id/CallSensorTextView"
-        android:layout_marginTop="23dp"
-        android:id="@+id/AudioSensor" />
-
-    <ToggleButton
-        android:text="ToggleButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/CallSensorToggleButton"
-        android:layout_alignStart="@+id/CallSensorToggleButton"
-        android:id="@+id/AudioSensorToggleButton" />
+        android:id="@+id/LightSensorSwitch"
+        android:checked="false"
+        android:splitTrack="false"
+        android:switchMinWidth="50dp"
+        android:layout_marginTop="17dp"
+        android:layout_below="@+id/GPSSensorSwitch"
+        android:layout_alignParentEnd="true" />
 
 </RelativeLayout>
