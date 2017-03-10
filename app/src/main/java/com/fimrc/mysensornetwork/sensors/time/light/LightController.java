@@ -48,7 +48,7 @@ public class LightController extends SensorTimeController {
             }
         }
 
-        record.addData("light", String.valueOf(light));
+        record.addData("light", light);
 
         mHandlerThread.quit();
         module.log(record);

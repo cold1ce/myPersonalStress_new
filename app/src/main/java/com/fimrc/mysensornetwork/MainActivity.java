@@ -17,6 +17,9 @@ import com.fimrc.mysensornetwork.sensors.time.light.LightModule;
 import com.fimrc.mysensornetwork.sensors.time.light.LightRecordStructure;
 import com.fimrc.sensorfusionframework.sensors.SensorManager;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class MainActivity extends AppCompatActivity {
 
     private static final int SCREEN_SENSOR = 0;
@@ -33,7 +36,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         System.out.println("START");
-
+        HashMap hm = new HashMap<String, String>(){{
+            put("frequency", "integer");
+            put("amplitude", "test");
+        }};
 
         //Reihenfolge wichtig für die globalen SensorVariablen (SCREEN_SENSOR,...)
         sensorManager = SensorManager.instance();
@@ -114,8 +120,7 @@ public class MainActivity extends AppCompatActivity {
         DatabaseLogger logger = new DatabaseLogger();
         Object[] array = {"ScreenSensor", structure, this.getBaseContext()};
         logger.initialize(array);
-        ScreenModule module = new ScreenModule(this.getBaseContext(), logger, structure);
-        return module;
+        return new ScreenModule(this.getBaseContext(), logger, structure);
     }
 
     public CallModule createCallSensor() {
@@ -123,8 +128,7 @@ public class MainActivity extends AppCompatActivity {
         DatabaseLogger logger = new DatabaseLogger();
         Object[] array = {"CallSensor", structure, this.getBaseContext()};
         logger.initialize(array);
-        CallModule module = new CallModule(this.getBaseContext(), logger, structure);
-        return module;
+        return new CallModule(this.getBaseContext(), logger, structure);
     }
 
     public AudioModule createAudioSensor(){
@@ -132,8 +136,7 @@ public class MainActivity extends AppCompatActivity {
         DatabaseLogger logger = new DatabaseLogger();
         Object[] array = {"AudioSensor", structure, this.getBaseContext()};
         logger.initialize(array);
-        AudioModule module = new AudioModule(this.getBaseContext(), logger, structure);
-        return module;
+        return new AudioModule(this.getBaseContext(), logger, structure);
     }
 
     public GPSModule createGPSSensor(){
@@ -141,8 +144,7 @@ public class MainActivity extends AppCompatActivity {
         DatabaseLogger logger = new DatabaseLogger();
         Object[] array = {"GPSSensor", structure, this.getBaseContext()};
         logger.initialize(array);
-        GPSModule module = new GPSModule(this.getBaseContext(), logger, structure);
-        return module;
+        return new GPSModule(this.getBaseContext(), logger, structure);
     }
 
     public LightModule createLightSensor(){
@@ -150,8 +152,7 @@ public class MainActivity extends AppCompatActivity {
         DatabaseLogger logger = new DatabaseLogger();
         Object[] array = {"LightSensor", structure, this.getBaseContext()};
         logger.initialize(array);
-        LightModule module = new LightModule(this.getBaseContext(), logger, structure);
-        return module;
+        return new LightModule(this.getBaseContext(), logger, structure);
     }
 
 }

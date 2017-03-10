@@ -1,10 +1,14 @@
 package com.fimrc.mysensornetwork.sensors.time.light;
 
+import android.util.Pair;
+
 import com.fimrc.sensorfusionframework.persistence.container.SensorRecord;
+import com.fimrc.sensorfusionframework.persistence.structure.Datatypes;
 import com.fimrc.sensorfusionframework.persistence.structure.SensorRecordStructure;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
 
 /**
@@ -14,9 +18,9 @@ import java.util.Iterator;
 public class LightRecordStructure extends SensorRecordStructure {
 
     public LightRecordStructure(){
-        super(new ArrayList<String>(Arrays.asList(
-                "light"
-        )));
+        super(new HashMap<Integer, Pair<String, Datatypes>>(){{
+            put(1, new Pair<>("light", Datatypes.INTEGER));
+        }});
     }
 
 

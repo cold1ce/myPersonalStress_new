@@ -5,11 +5,9 @@ import android.content.Intent;
 import android.location.Location;
 import android.location.LocationManager;
 import android.location.LocationListener;
-import android.location.LocationProvider;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.HandlerThread;
-import android.os.Message;
+import android.os.Looper;
 
 import com.fimrc.sensorfusionframework.persistence.container.SensorRecord;
 import com.fimrc.sensorfusionframework.sensors.SensorTimeController;
@@ -17,171 +15,132 @@ import com.fimrc.sensorfusionframework.sensors.SensorTimeController;
 import java.util.Date;
 
 /**
- * Created by Sven on 01.03.2017.
- */
+* Created by Sven on 01.03.2017.
+*/
 
 public class GPSController extends SensorTimeController {
 
-    private static final int INIT_GPS 	= 1;
-    private static final int KILL_GPS 	= 2;
+    // The minimum distance to change Updates in meters
+    private volatile static long MIN_DISTANCE_CHANGE_FOR_UPDATES = 0;
+    // The minimum time between updates in milliseconds
+    private volatile static long MIN_TIME_BW_UPDATES = 0;
+    private volatile boolean isGPSEnabled = false;
+    private volatile boolean isNetworkEnabled = false;
+    private volatile double latitude = -1;
+    private volatile double longitude = -1;
+    private volatile double altitude = -1;
+    private volatile double speed = -1;
+    private volatile double bearing = -1;
+    private volatile LocationManager locationManager;
+    private volatile GPSLocationTask backgroundTask;
 
-    // are these there?
-    private boolean isKilled;
-    private boolean finished = false;
-
-    // sensor data
-    private double Longitude = -1, Latitude = -1, Altitude = -1, Speed, Bearing;
-
-    // for GPS
-    private LocationManager manager;
-    private LocationReceiver mReceiver;
-    private HandlerThread mHandlerThread;
-    private Handler mHandler;
-
-    public GPSController(GPSModule module){
+    public GPSController(GPSModule module, Context context) {
         super(module);
+        locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
     }
 
-    private boolean initialize(Context context){
-        try{
-            mReceiver = new LocationReceiver();
-            manager = (LocationManager)context.getSystemService(Context.LOCATION_SERVICE);
-            // check if there is some GPS
-            try{
-                LocationProvider gps = manager.getProvider(LocationManager.GPS_PROVIDER);
-                if (gps != null){
-                    mHandlerThread = new HandlerThread("GPSSensorThread");
-                    mHandlerThread.start();
-                    mHandler = new Handler(mHandlerThread.getLooper(), new GPSSensorHandler());
-                    return true;
-                }else
-                    return false;
-            }catch(Exception e){
-                return false;
-            }
-        }catch (Exception e){
-            return false;
-        }
-    }
-
-    @Override
-    public void onReceive(Context context, Intent intent) {
+    private void SensorDataFinished() {
         Date date = new Date(System.currentTimeMillis());
-        SensorRecord record = new SensorRecord(module.getNextIndex(), date , structure);
-
-        if(!initialize(context))
-            return;
-
-        mHandler.sendMessage(mHandler.obtainMessage(INIT_GPS));
-
-        while(!finished){
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-
-        mHandlerThread.quit();
-        mHandlerThread = new HandlerThread("GPSSensorThread");
-        mHandlerThread.start();
-        mHandler = new Handler(mHandlerThread.getLooper(), new GPSSensorHandler());
-        mHandler.sendMessage(mHandler.obtainMessage(KILL_GPS));
-
-        while(!isKilled) {
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-
-        if(Longitude != -1)
-            record.addData("longitude", String.valueOf(Longitude));
+        SensorRecord record = new SensorRecord(module.getNextIndex(), date, structure);
+        if (longitude != -1)
+            record.addData("longitude", String.valueOf(longitude));
         else
             record.addData("longitude", " ");
 
-        if(Latitude != -1)
-            record.addData("latitude", String.valueOf(Longitude));
+        if (latitude != -1)
+            record.addData("latitude", String.valueOf(longitude));
         else
             record.addData("latitude", " ");
 
-        if(Altitude != -1)
-            record.addData("altitude", String.valueOf(Longitude));
+        if (altitude != -1)
+            record.addData("altitude", String.valueOf(altitude));
         else
             record.addData("altitude", " ");
 
-        if(Bearing != 0L)
-            record.addData("bearing", String.valueOf(Longitude));
+        if (bearing != -1)
+            record.addData("bearing", String.valueOf(bearing));
         else
             record.addData("bearing", " ");
 
-        if(Speed != 0L)
-            record.addData("speed", String.valueOf(Longitude));
+        if (speed != -1)
+            record.addData("speed", String.valueOf(speed));
         else
             record.addData("speed", " ");
 
-        mHandlerThread.quit();
-
         module.log(record);
+
     }
 
-    private class GPSSensorHandler implements Handler.Callback {
-        @Override
-        public boolean handleMessage(Message msg) {
-            switch (msg.what){
-                case INIT_GPS:
-                    try{
-                        if (manager != null) {
-                            mHandlerThread.quit();
-                            mHandlerThread = new HandlerThread("GPSSensorThread");
-                            mHandlerThread.start();
 
-                            // request location updates
-                            manager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, (float) 0, mReceiver, mHandlerThread.getLooper());
-                            manager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, 0, (float) 0, mReceiver, mHandlerThread.getLooper());
-                        }
-                    }catch(SecurityException e){
-                        e.printStackTrace();
-                    }
-                    break;
-                case KILL_GPS:
-                    if (manager!=null)
-                        try{
-                            manager.removeUpdates(mReceiver);
-                        }catch(SecurityException e){
-                            e.printStackTrace();
-                        }
-                    isKilled = true;
-                    break;
-                default:
-                    break;
-            }
-
-            return true;
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        latitude = -1;
+        longitude = -1;
+        altitude = -1;
+        speed = -1;
+        bearing = -1;
+        isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+        isNetworkEnabled = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+        if (backgroundTask != null && (backgroundTask.getStatus() == AsyncTask.Status.RUNNING || backgroundTask.getStatus() == AsyncTask.Status.PENDING)){
+            backgroundTask.cancel(true);
+            backgroundTask = new GPSLocationTask();
+        } else {
+            backgroundTask = new GPSLocationTask();
         }
+        backgroundTask.execute();
     }
 
-    private class LocationReceiver implements LocationListener {
-        public void	onLocationChanged(Location location) {
-            if (location != null){
-                Longitude 	= location.getLongitude();
-                Latitude 	= location.getLatitude();
-                Altitude 	= location.getAltitude();
+    private class GPSLocationTask extends AsyncTask<Void, Void, Void> implements LocationListener {
 
-                // don't do anything if we get a null reading for some reason
-                if (Longitude == 0.0f && Latitude == 0.0f)
-                    return;
+        @Override
+        protected Void doInBackground(Void... params) {
+            System.out.println("THREAD STARTED");
+            Looper.myLooper().prepare();
+                try {
+                    if (isNetworkEnabled)
+                        locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER, MIN_TIME_BW_UPDATES, MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
+                    if (isGPSEnabled)
+                        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, MIN_TIME_BW_UPDATES, MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
+                } catch (SecurityException e) {
+                    e.printStackTrace();
+                }
+            return null;
+        }
 
+        @Override
+        protected void onPostExecute(Void nothing) {
+            try {
+                locationManager.removeUpdates(this);
+            }catch(SecurityException e){
+                e.printStackTrace();
+            }
+            SensorDataFinished();
+        }
+
+        @Override
+        protected void onCancelled(Void nothing) {
+            try {
+                locationManager.removeUpdates(this);
+            }catch(SecurityException e){
+                e.printStackTrace();
+            }
+            SensorDataFinished();
+        }
+
+        public void onLocationChanged(Location location) {
+            System.out.println("---onLocationChanged called---");
+            if (location != null) {
+                System.out.println("Location != null");
+                longitude = location.getLongitude();
+                latitude = location.getLatitude();
+                altitude = location.getAltitude();
                 // any speed information?
                 if (location.hasSpeed())
-                    Speed		= (double)location.getSpeed();
-
+                    speed = (double) location.getSpeed();
                 // any bearing information?
                 if (location.hasBearing())
-                    Bearing		= (double)location.getBearing();
+                    bearing = (double) location.getBearing();
 
-                finished = true;
             }
         }
 
@@ -189,11 +148,11 @@ public class GPSController extends SensorTimeController {
 
         }
 
-        public void	onProviderEnabled(String provider) {
+        public void onProviderEnabled(String provider) {
 
         }
 
-        public void	onStatusChanged(String provider, int status, Bundle extras) {
+        public void onStatusChanged(String provider, int status, Bundle extras) {
 
         }
     }

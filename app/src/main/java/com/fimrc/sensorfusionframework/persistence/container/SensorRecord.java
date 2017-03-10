@@ -1,5 +1,8 @@
 package com.fimrc.sensorfusionframework.persistence.container;
 
+import android.util.Pair;
+
+import com.fimrc.sensorfusionframework.persistence.structure.Datatypes;
 import com.fimrc.sensorfusionframework.persistence.structure.SensorRecordStructure;
 import com.fimrc.sensorfusionframework.persistence.structure.SensorRecordStructureException;
 
@@ -35,7 +38,8 @@ public class SensorRecord implements Iterable<Object> {
         boolean isValueSet = false;
         if (structure.getStructure().size() > valueList.size()) {
             while (structure.getStructure().size() > valueList.size()) {
-                if (structure.getStructure().get(valueList.size()).equals(name)) {
+                Pair<String, Datatypes> strucurePair = structure.getStructure().get(valueList.size()+1);
+                if (strucurePair.first.equals(name)) {
                     valueList.add(value);
                     isValueSet = true;
                     break;

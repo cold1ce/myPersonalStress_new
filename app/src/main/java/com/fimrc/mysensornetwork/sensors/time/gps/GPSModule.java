@@ -17,7 +17,7 @@ public class GPSModule extends SensorModule {
 
     public GPSModule(Context context, PersistenceLogger logger, SensorRecordStructure structure){
         super(context, logger, structure);
-        controller = new GPSController(this);
+        controller = new GPSController(this, context);
     }
 
     @Override

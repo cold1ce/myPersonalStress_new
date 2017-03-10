@@ -4,18 +4,22 @@ package com.fimrc.mysensornetwork.persistence;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Pair;
 
 import com.fimrc.sensorfusionframework.persistence.PersistenceLogger;
 import com.fimrc.sensorfusionframework.persistence.container.SensorRecord;
+import com.fimrc.sensorfusionframework.persistence.structure.Datatypes;
 import com.fimrc.sensorfusionframework.persistence.structure.SensorRecordStructure;
 
 import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 /**
  * Created by Sven on 17.02.2017.
@@ -53,19 +57,17 @@ public class DatabaseLogger extends PersistenceLogger {
     @Override
     protected void log(SensorRecord record) {
         SQLiteDatabase database = sqLiteHelper.getDatabase();
-        ArrayList<String> line = convertSensorRecord(record);
-        List<String> structureList = structure.getStructure();
+        ArrayList<Object> sensorRecordLine = convertSensorRecord(record);
+        HashMap<Integer, Pair<String,Datatypes>> structureList = structure.getStructure();
         StringBuilder sb = new StringBuilder();
         StringBuilder values = new StringBuilder();
         Date timestamp = record.getTimestamp();
         Format format = new SimpleDateFormat("yyyy-MM-dd  HH:mm:ss");
         sb.append("INSERT INTO "+ sqLiteHelper.TableName+" ("+sqLiteHelper.COLUMN_TIMESTAMP);
-        int i = 0;
-        for(String s : structureList){
-            if(i < line.size() && line.get(i) != null) {
-                sb.append("," + s);
-                values.append(",'" + line.get(i) + "'");
-                i++;
+        for(int i=0; i<structureList.size();i++){
+            if(sensorRecordLine.get(i) != null){
+                sb.append(",'"+ structure.getNameAtIndex(i)+"'");
+                values.append(",'"+sensorRecordLine.get(i)+"'");
             }
         }
         sb.append(") VALUES ('" + format.format(timestamp)+"'"+values.toString()+")");
@@ -76,14 +78,14 @@ public class DatabaseLogger extends PersistenceLogger {
     @Override
     protected void finalize() {}
 
-    private ArrayList<String> convertSensorRecord(SensorRecord record) {
-        ArrayList<String> line = new ArrayList();
+    private ArrayList<Object> convertSensorRecord(SensorRecord record) {
+        ArrayList<Object> line = new ArrayList<>();
         for (Object data : record) {
-            line.add(data.toString());
+            line.add(data);
         }
         return line;
     }
-
+    /*
     public void print(){
         SQLiteDatabase database = sqLiteHelper.getDatabase();
         String SQL = "SELECT * FROM "+sqLiteHelper.TableName;
@@ -104,5 +106,6 @@ public class DatabaseLogger extends PersistenceLogger {
         }
         c.close();
     }
+    */
 
 }

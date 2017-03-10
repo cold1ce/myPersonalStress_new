@@ -3,9 +3,12 @@ package com.fimrc.mysensornetwork.persistence;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Pair;
 
+import com.fimrc.sensorfusionframework.persistence.structure.Datatypes;
 import com.fimrc.sensorfusionframework.persistence.structure.SensorRecordStructure;
 
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -26,14 +29,49 @@ public final class mySQLiteHelper extends SQLiteOpenHelper {
     public mySQLiteHelper(String TableName, SensorRecordStructure structure, Context context){
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
         this.TableName = TableName;
-        List<String> structureList = structure.getStructure();
+        HashMap<Integer, Pair<String, Datatypes>> structureList = structure.getStructure();
         StringBuilder sb = new StringBuilder();
         sb.append("CREATE TABLE IF NOT EXISTS "+TableName+" ("
                 +COLUMN_ID+" INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + COLUMN_TIMESTAMP + " DATE NOT NULL");
-        for(String s : structureList)
-            sb.append(", "+s+ " TEXT");
-
+        for(int i=0; i<structureList.size(); i++){
+            sb.append(", "+structure.getNameAtIndex(i));
+            switch(structure.getDatatypeAtIndex(i)) {
+                case STRING:
+                    sb.append(" VARCHAR(30)");
+                    break;
+                case DOUBLE:
+                    sb.append(" DOUBLE");
+                    break;
+                case BOOLEAN:
+                    sb.append(" BOOLEAN");
+                    break;
+                case CHAR:
+                    sb.append(" VARCHAR(1)");
+                    break;
+                case BYTE:
+                    sb.append(" VARCHAR(1)");
+                    break;
+                case SHORT:
+                    sb.append(" SMALLINT");
+                    break;
+                case INTEGER:
+                    sb.append(" INTEGER");
+                    break;
+                case LONG:
+                    sb.append(" BIGINT");
+                    break;
+                case FLOAT:
+                    sb.append(" FLOAT");
+                    break;
+                case BLOB:
+                    sb.append(" BLOB");
+                    break;
+                default:
+                    sb.append(" TEXT");
+                    break;
+            }
+        }
         sb.append(")");
         TableCreate = sb.toString();
         System.out.println(TableCreate);
