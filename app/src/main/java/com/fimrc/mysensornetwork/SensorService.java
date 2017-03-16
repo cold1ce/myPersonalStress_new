@@ -31,11 +31,10 @@ import com.fimrc.sensorfusionframework.sensors.SensorManager;
 
 public class SensorService extends Service {
 
-    public static final int CREATE = 0;
-    public static final int ACTIVATE_SENSOR = 1;
-    public static final int DEACTIVATE_SENSOR = 2;
-    public static final int START_LOGGING = 3;
-    public static final int STOP_LOGGING = 4;
+    public static final int ACTIVATE_SENSOR = 0;
+    public static final int DEACTIVATE_SENSOR = 1;
+    public static final int START_LOGGING = 2;
+    public static final int STOP_LOGGING = 3;
 
     public static final int SCREEN_SENSOR = 0;
     public static final int CALL_SENSOR = 1;
@@ -56,30 +55,6 @@ public class SensorService extends Service {
             Log.d("handleMessage", "arg1: "+msg.arg1+" arg2: "+msg.arg2);
             Log.d("handleMessageThread", String.valueOf(Thread.currentThread().getId()));
             switch(msg.arg1){
-                case CREATE:
-                    switch(msg.arg2){
-                        /*case SCREEN_SENSOR:
-                            createScreenSensor();
-                            break;
-                        case CALL_SENSOR:
-                            createCallSensor();
-                            break;
-                        case AUDIO_SENSOR:
-                            createAudioSensor();
-                            break;
-                        case GPS_SENSOR:
-                            createGPSSensor();
-                            break;
-                        case LIGHT_SENSOR:
-                            createLightSensor();
-                            break;
-                        case CELL_SENSOR:
-                            createCellSensor();
-                            break;*/
-                        default:
-                            break;
-                    }
-                    break;
                 case ACTIVATE_SENSOR:
                     SensorManager.instance().getSensor(msg.arg2).activateSensor();
                     break;
@@ -129,53 +104,4 @@ public class SensorService extends Service {
     public void onDestroy() {
         Log.d("SensorService", "onDestroy");
     }
-/*
-    public void createScreenSensor() {
-        ScreenRecordStructure structure = new ScreenRecordStructure();
-        DatabaseLogger logger = new DatabaseLogger();
-        Object[] array = {"ScreenSensor", structure, this.getBaseContext()};
-        logger.initialize(array);
-        SensorManager.instance().insertSensor(new ScreenModule(this.getBaseContext(), logger, structure));
-    }
-
-    public void createCallSensor() {
-        CallRecordStructure structure = new CallRecordStructure();
-        DatabaseLogger logger = new DatabaseLogger();
-        Object[] array = {"CallSensor", structure, this.getBaseContext()};
-        logger.initialize(array);
-        SensorManager.instance().insertSensor(new CallModule(this.getBaseContext(), logger, structure));
-    }
-
-    public void createAudioSensor(){
-        AudioRecordStructure structure = new AudioRecordStructure();
-        DatabaseLogger logger = new DatabaseLogger();
-        Object[] array = {"AudioSensor", structure, this.getBaseContext()};
-        logger.initialize(array);
-        SensorManager.instance().insertSensor(new AudioModule(this.getBaseContext(), logger, structure));
-    }
-
-    public void createGPSSensor(){
-        GPSRecordStructure structure = new GPSRecordStructure();
-        DatabaseLogger logger = new DatabaseLogger();
-        Object[] array = {"GPSSensor", structure, this.getBaseContext()};
-        logger.initialize(array);
-        SensorManager.instance().insertSensor(new GPSModule(this.getBaseContext(), logger, structure));
-    }
-
-    public void createLightSensor(){
-        LightRecordStructure structure = new LightRecordStructure();
-        DatabaseLogger logger = new DatabaseLogger();
-        Object[] array = {"LightSensor", structure, this.getBaseContext()};
-        logger.initialize(array);
-        SensorManager.instance().insertSensor(new LightModule(this.getBaseContext(), logger, structure));
-    }
-
-    public void createCellSensor(){
-        CellRecordStructure structure = new CellRecordStructure();
-        DatabaseLogger logger = new DatabaseLogger();
-        Object[] array = {"CellSensor", structure, this.getBaseContext()};
-        logger.initialize(array);
-        SensorManager.instance().insertSensor(new CellModule(this.getBaseContext(), logger, structure));
-    }
-*/
 }
