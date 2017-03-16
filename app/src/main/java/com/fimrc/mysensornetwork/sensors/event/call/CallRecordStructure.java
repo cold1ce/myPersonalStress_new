@@ -19,8 +19,8 @@ public class CallRecordStructure extends SensorRecordStructure {
 
     public CallRecordStructure(){
         super(new HashMap<Integer, Pair<String, Datatypes>>(){{
-            put(1, new Pair("callee", Datatypes.STRING));
-            put(2, new Pair("caller", Datatypes.STRING));
+            put(1, new Pair<>("callee", Datatypes.STRING));
+            put(2, new Pair<>("caller", Datatypes.STRING));
         }});
     }
 

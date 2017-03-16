@@ -3,6 +3,7 @@ package com.fimrc.mysensornetwork.persistence;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 import android.util.Pair;
 
 import com.fimrc.sensorfusionframework.persistence.structure.Datatypes;
@@ -74,7 +75,8 @@ public final class mySQLiteHelper extends SQLiteOpenHelper {
         }
         sb.append(")");
         TableCreate = sb.toString();
-        System.out.println(TableCreate);
+        Log.d("Database",TableCreate);
+        Log.d("Database", String.valueOf(Thread.currentThread().getId()));
         database = getWritableDatabase();
         createTable(database);
     }

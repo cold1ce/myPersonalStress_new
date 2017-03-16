@@ -8,14 +8,10 @@ import com.fimrc.sensorfusionframework.persistence.structure.SensorRecordStructu
  * Created by Sven on 02.03.2017.
  */
 
-public abstract class SensorEventController extends BroadcastReceiver {
-
-    protected SensorModule module;
-    protected SensorRecordStructure structure;
+public abstract class SensorEventController extends SensorController {
 
     public SensorEventController(SensorModule module){
-        this.module = module;
-        structure = module.getStructure();
+        super(module);
     }
 
 }

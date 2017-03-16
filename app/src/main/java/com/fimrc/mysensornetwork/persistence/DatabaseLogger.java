@@ -4,6 +4,7 @@ package com.fimrc.mysensornetwork.persistence;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 import android.util.Pair;
 
 import com.fimrc.sensorfusionframework.persistence.PersistenceLogger;
@@ -71,7 +72,8 @@ public class DatabaseLogger extends PersistenceLogger {
             }
         }
         sb.append(") VALUES ('" + format.format(timestamp)+"'"+values.toString()+")");
-        System.out.println(sb.toString());
+        Log.d("Database",sb.toString());
+        Log.d("Database", String.valueOf(Thread.currentThread().getId()));
         database.execSQL(sb.toString());
     }
 

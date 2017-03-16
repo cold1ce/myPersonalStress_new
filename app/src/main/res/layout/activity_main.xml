@@ -89,4 +89,16 @@
         android:layout_below="@+id/GPSSensorSwitch"
         android:layout_alignParentEnd="true" />
 
+    <Switch
+        android:text="CellSensor  "
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/CellSensorSwitch"
+        android:checked="false"
+        android:splitTrack="false"
+        android:switchMinWidth="50dp"
+        android:layout_marginTop="16dp"
+        android:layout_below="@+id/LightSensorSwitch"
+        android:layout_alignParentEnd="true" />
+
 </RelativeLayout>

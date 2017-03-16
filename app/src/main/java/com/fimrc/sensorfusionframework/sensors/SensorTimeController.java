@@ -14,14 +14,10 @@ import java.util.concurrent.TimeUnit;
  * Created by Sven on 27.02.2017.
  */
 
-public abstract class SensorTimeController extends BroadcastReceiver {
-
-    protected SensorModule module;
-    protected SensorRecordStructure structure;
+public abstract class SensorTimeController extends SensorController {
 
     public SensorTimeController(SensorModule module){
-        this.module = module;
-        structure = module.getStructure();
+        super(module);
     }
 
     public void setAlarm(Context context, long intervalInSeconds, String FilterName ) {

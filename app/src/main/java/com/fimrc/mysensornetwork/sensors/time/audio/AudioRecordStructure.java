@@ -17,8 +17,8 @@ public class AudioRecordStructure extends SensorRecordStructure {
 
     public AudioRecordStructure(){
         super(new HashMap<Integer, Pair<String, Datatypes>>(){{
-            put(1, new Pair("frequency", Datatypes.DOUBLE));
-            put(2, new Pair("amplitude", Datatypes.DOUBLE));
+            put(1, new Pair<>("frequency", Datatypes.DOUBLE));
+            put(2, new Pair<>("amplitude", Datatypes.DOUBLE));
         }});
     }
 
