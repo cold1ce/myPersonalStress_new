@@ -24,7 +24,7 @@ public class CallModule extends SensorModule {
     }
 
     @Override
-    public boolean activateSensor() {
+    public boolean activate() {
         IntentFilter filterOutgoingCall = new IntentFilter(Intent.ACTION_NEW_OUTGOING_CALL);
         IntentFilter filterStateChanged = new IntentFilter(TelephonyManager.ACTION_PHONE_STATE_CHANGED);
         context.registerReceiver(controller, filterOutgoingCall);
@@ -33,7 +33,7 @@ public class CallModule extends SensorModule {
     }
 
     @Override
-    public boolean deactivateSensor() {
+    public boolean deactivate() {
         return false;
     }
 }

@@ -1,4 +1,4 @@
-package com.fimrc.mysensornetwork;
+package com.fimrc.mysensornetwork.gui;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
@@ -7,7 +7,9 @@ import android.util.Log;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 
-import com.fimrc.sensorfusionframework.sensors.SensorManager;
+import com.fimrc.mysensornetwork.R;
+import com.fimrc.mysensornetwork.SensorService;
+import com.fimrc.sensorfusionframework.sensors.SensorModuleFactory;
 
 import static com.fimrc.mysensornetwork.SensorService.ACTIVATE_SENSOR;
 import static com.fimrc.mysensornetwork.SensorService.AUDIO_SENSOR;
@@ -17,7 +19,6 @@ import static com.fimrc.mysensornetwork.SensorService.DEACTIVATE_SENSOR;
 import static com.fimrc.mysensornetwork.SensorService.GPS_SENSOR;
 import static com.fimrc.mysensornetwork.SensorService.LIGHT_SENSOR;
 import static com.fimrc.mysensornetwork.SensorService.SCREEN_SENSOR;
-import static com.fimrc.mysensornetwork.SensorService.CREATE;
 import static com.fimrc.mysensornetwork.SensorService.START_LOGGING;
 import static com.fimrc.mysensornetwork.SensorService.STOP_LOGGING;
 
@@ -48,23 +49,16 @@ public class MainActivity extends AppCompatActivity {
         LightSensorSwitch = (Switch) findViewById(R.id.LightSensorSwitch);
         CellSensorSwitch = (Switch) findViewById(R.id.CellSensorSwitch);
 
-        sendSensorActionToService(CREATE, SCREEN_SENSOR);
-        sendSensorActionToService(CREATE, CALL_SENSOR);
-        sendSensorActionToService(CREATE, AUDIO_SENSOR);
-        sendSensorActionToService(CREATE, GPS_SENSOR);
-        sendSensorActionToService(CREATE, LIGHT_SENSOR);
-        sendSensorActionToService(CREATE, CELL_SENSOR);
-/*
-        ScreenSensorSwitch.setChecked(SensorManager.instance().getSensor(SCREEN_SENSOR).isActive());
-        CallSensorSwitch.setChecked(SensorManager.instance().getSensor(CALL_SENSOR).isActive());
-        AudioSensorSwitch.setChecked(SensorManager.instance().getSensor(AUDIO_SENSOR).isActive());
-        GPSSensorSwitch.setChecked(SensorManager.instance().getSensor(GPS_SENSOR).isActive());
-        LightSensorSwitch.setChecked(SensorManager.instance().getSensor(LIGHT_SENSOR).isActive());
-        CellSensorSwitch.setChecked(SensorManager.instance().getSensor(CELL_SENSOR).isActive());
-*/
-        addListenerOnSwitchButton();
-    }
+        SensorModuleFactory.getSensorModule("event", "Screen", this);
+        SensorModuleFactory.getSensorModule("event", "Call", this);
+        SensorModuleFactory.getSensorModule("time", "Audio", this);
+        SensorModuleFactory.getSensorModule("time", "GPS", this);
+        SensorModuleFactory.getSensorModule("time", "Light", this);
+        SensorModuleFactory.getSensorModule("time", "Cell", this);
 
+        addListenerOnSwitchButton();
+
+    }
 
     private void sendSensorActionToService(int action, int sensorNumber){
         Intent i = new Intent(MainActivity.this, SensorService.class);

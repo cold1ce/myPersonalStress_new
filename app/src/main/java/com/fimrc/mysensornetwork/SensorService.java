@@ -58,7 +58,7 @@ public class SensorService extends Service {
             switch(msg.arg1){
                 case CREATE:
                     switch(msg.arg2){
-                        case SCREEN_SENSOR:
+                        /*case SCREEN_SENSOR:
                             createScreenSensor();
                             break;
                         case CALL_SENSOR:
@@ -75,7 +75,7 @@ public class SensorService extends Service {
                             break;
                         case CELL_SENSOR:
                             createCellSensor();
-                            break;
+                            break;*/
                         default:
                             break;
                     }
@@ -127,10 +127,9 @@ public class SensorService extends Service {
 
     @Override
     public void onDestroy() {
-        L.s(this, "Service done");
         Log.d("SensorService", "onDestroy");
     }
-
+/*
     public void createScreenSensor() {
         ScreenRecordStructure structure = new ScreenRecordStructure();
         DatabaseLogger logger = new DatabaseLogger();
@@ -178,5 +177,5 @@ public class SensorService extends Service {
         logger.initialize(array);
         SensorManager.instance().insertSensor(new CellModule(this.getBaseContext(), logger, structure));
     }
-
+*/
 }

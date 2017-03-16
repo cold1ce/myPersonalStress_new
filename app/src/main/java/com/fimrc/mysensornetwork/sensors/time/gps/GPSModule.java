@@ -21,7 +21,7 @@ public class GPSModule extends SensorModule {
     }
 
     @Override
-    public boolean activateSensor() {
+    public boolean activate() {
         String filterName = "GPSSensor";
         context.registerReceiver(controller, new IntentFilter(filterName));
         controller.setAlarm(context, 60, filterName);
@@ -29,7 +29,7 @@ public class GPSModule extends SensorModule {
     }
 
     @Override
-    public boolean deactivateSensor() {
+    public boolean deactivate() {
         context.unregisterReceiver(controller);
         controller.cancelAlarm(context);
         return false;

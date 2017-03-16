@@ -30,12 +30,22 @@ public abstract class SensorModule {
     /**
      * @return true: Sensor activated, false: Sensor not activated
      */
-    public abstract boolean activateSensor();
+    public boolean activateSensor(){
+        active = true;
+        return this.activate();
+    }
 
     /**
      * @return true: Sensor deactivated, false: Sensor not deactivated
      */
-    public abstract boolean deactivateSensor();
+    public boolean deactivateSensor(){
+        active = false;
+        return this.deactivate();
+    }
+
+    protected abstract boolean activate();
+
+    protected abstract boolean deactivate();
 
     /**
      * @return true if logging started successfully / else: true

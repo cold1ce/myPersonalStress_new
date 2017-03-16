@@ -29,5 +29,4 @@ public class ScreenController extends SensorEventController{
         }
         module.log(record);
     }
-
 }

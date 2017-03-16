@@ -23,7 +23,7 @@ public class ScreenModule extends SensorModule {
     }
 
     @Override
-    public boolean activateSensor() {
+    public boolean activate() {
         IntentFilter filterON = new IntentFilter(Intent.ACTION_SCREEN_ON);
         IntentFilter filterOFF = new IntentFilter(Intent.ACTION_SCREEN_OFF);
         context.registerReceiver(controller, filterON);
@@ -32,7 +32,7 @@ public class ScreenModule extends SensorModule {
     }
 
     @Override
-    public boolean deactivateSensor() {
+    public boolean deactivate() {
         context.unregisterReceiver(controller);
         return false;
     }
