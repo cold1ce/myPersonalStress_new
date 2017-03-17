@@ -36,13 +36,6 @@ public class SensorService extends Service {
     public static final int START_LOGGING = 2;
     public static final int STOP_LOGGING = 3;
 
-    public static final int SCREEN_SENSOR = 0;
-    public static final int CALL_SENSOR = 1;
-    public static final int AUDIO_SENSOR = 2;
-    public static final int GPS_SENSOR = 3;
-    public static final int LIGHT_SENSOR = 4;
-    public static final int CELL_SENSOR = 5;
-
     private Looper serviceLooper;
     private ServiceHandler serviceHandler;
 

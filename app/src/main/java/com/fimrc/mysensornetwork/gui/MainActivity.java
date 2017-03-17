@@ -9,16 +9,11 @@ import android.widget.Switch;
 
 import com.fimrc.mysensornetwork.R;
 import com.fimrc.mysensornetwork.SensorService;
+import com.fimrc.mysensornetwork.sensors.SensorContainer;
 import com.fimrc.sensorfusionframework.sensors.SensorModuleFactory;
 
 import static com.fimrc.mysensornetwork.SensorService.ACTIVATE_SENSOR;
-import static com.fimrc.mysensornetwork.SensorService.AUDIO_SENSOR;
-import static com.fimrc.mysensornetwork.SensorService.CALL_SENSOR;
-import static com.fimrc.mysensornetwork.SensorService.CELL_SENSOR;
 import static com.fimrc.mysensornetwork.SensorService.DEACTIVATE_SENSOR;
-import static com.fimrc.mysensornetwork.SensorService.GPS_SENSOR;
-import static com.fimrc.mysensornetwork.SensorService.LIGHT_SENSOR;
-import static com.fimrc.mysensornetwork.SensorService.SCREEN_SENSOR;
 import static com.fimrc.mysensornetwork.SensorService.START_LOGGING;
 import static com.fimrc.mysensornetwork.SensorService.STOP_LOGGING;
 
@@ -39,8 +34,8 @@ public class MainActivity extends AppCompatActivity {
 
         System.out.println("START");
         Log.d("ActivityThread", String.valueOf(Thread.currentThread().getId()));
-        Intent i = new Intent(MainActivity.this, SensorService.class);
-        startService(i);
+        Intent intent = new Intent(MainActivity.this, SensorService.class);
+        startService(intent);
 
         ScreenSensorSwitch = (Switch) findViewById(R.id.ScreenSensorSwitch);
         CallSensorSwitch = (Switch) findViewById(R.id.CallSensorSwitch);
@@ -49,15 +44,13 @@ public class MainActivity extends AppCompatActivity {
         LightSensorSwitch = (Switch) findViewById(R.id.LightSensorSwitch);
         CellSensorSwitch = (Switch) findViewById(R.id.CellSensorSwitch);
 
-        SensorModuleFactory.getSensorModule("event", "Screen", this);
-        SensorModuleFactory.getSensorModule("event", "Call", this);
-        SensorModuleFactory.getSensorModule("time", "Audio", this);
-        SensorModuleFactory.getSensorModule("time", "GPS", this);
-        SensorModuleFactory.getSensorModule("time", "Light", this);
-        SensorModuleFactory.getSensorModule("time", "Cell", this);
+        for(int i=0; i<SensorContainer.getNumberOfSensors(); i++){
+            if(SensorContainer.getSensor(i).eventSensor != null)
+                SensorModuleFactory.getSensorModule(SensorContainer.getSensor(i).eventSensor, this);
+            SensorModuleFactory.getSensorModule(SensorContainer.getSensor(i).timeSensor, this);
+        }
 
         addListenerOnSwitchButton();
-
     }
 
     private void sendSensorActionToService(int action, int sensorNumber){
@@ -71,22 +64,22 @@ public class MainActivity extends AppCompatActivity {
         ScreenSensorSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked){
                 if(isChecked){
-                    sendSensorActionToService(ACTIVATE_SENSOR, SCREEN_SENSOR);
-                    sendSensorActionToService(START_LOGGING, SCREEN_SENSOR);
+                    sendSensorActionToService(ACTIVATE_SENSOR, SensorContainer.getSensorIndex(SensorContainer.EventSensors.Screen));
+                    sendSensorActionToService(START_LOGGING, SensorContainer.getSensorIndex(SensorContainer.EventSensors.Screen));
                 }else{
-                    sendSensorActionToService(DEACTIVATE_SENSOR, SCREEN_SENSOR);
-                    sendSensorActionToService(STOP_LOGGING, SCREEN_SENSOR);
+                    sendSensorActionToService(DEACTIVATE_SENSOR, SensorContainer.getSensorIndex(SensorContainer.EventSensors.Screen));
+                    sendSensorActionToService(STOP_LOGGING, SensorContainer.getSensorIndex(SensorContainer.EventSensors.Screen));
                 }
             }
         });
         CallSensorSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked){
                 if(isChecked){
-                    sendSensorActionToService(ACTIVATE_SENSOR, CALL_SENSOR);
-                    sendSensorActionToService(START_LOGGING, CALL_SENSOR);
+                    sendSensorActionToService(ACTIVATE_SENSOR, SensorContainer.getSensorIndex(SensorContainer.EventSensors.Call));
+                    sendSensorActionToService(START_LOGGING, SensorContainer.getSensorIndex(SensorContainer.EventSensors.Call));
                 }else{
-                    sendSensorActionToService(DEACTIVATE_SENSOR, CALL_SENSOR);
-                    sendSensorActionToService(STOP_LOGGING, CALL_SENSOR);
+                    sendSensorActionToService(DEACTIVATE_SENSOR, SensorContainer.getSensorIndex(SensorContainer.EventSensors.Call));
+                    sendSensorActionToService(STOP_LOGGING, SensorContainer.getSensorIndex(SensorContainer.EventSensors.Call));
                 }
             }
         });
@@ -94,11 +87,11 @@ public class MainActivity extends AppCompatActivity {
         AudioSensorSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked){
                 if(isChecked){
-                    sendSensorActionToService(ACTIVATE_SENSOR, AUDIO_SENSOR);
-                    sendSensorActionToService(START_LOGGING, AUDIO_SENSOR);
+                    sendSensorActionToService(ACTIVATE_SENSOR, SensorContainer.getSensorIndex(SensorContainer.TimeSensors.Audio));
+                    sendSensorActionToService(START_LOGGING, SensorContainer.getSensorIndex(SensorContainer.TimeSensors.Audio));
                 }else{
-                    sendSensorActionToService(DEACTIVATE_SENSOR, AUDIO_SENSOR);
-                    sendSensorActionToService(STOP_LOGGING, AUDIO_SENSOR);
+                    sendSensorActionToService(DEACTIVATE_SENSOR, SensorContainer.getSensorIndex(SensorContainer.TimeSensors.Audio));
+                    sendSensorActionToService(STOP_LOGGING, SensorContainer.getSensorIndex(SensorContainer.TimeSensors.Audio));
                 }
             }
         });
@@ -106,11 +99,11 @@ public class MainActivity extends AppCompatActivity {
         GPSSensorSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked){
                 if(isChecked){
-                    sendSensorActionToService(ACTIVATE_SENSOR, GPS_SENSOR);
-                    sendSensorActionToService(START_LOGGING, GPS_SENSOR);
+                    sendSensorActionToService(ACTIVATE_SENSOR, SensorContainer.getSensorIndex(SensorContainer.TimeSensors.GPS));
+                    sendSensorActionToService(START_LOGGING, SensorContainer.getSensorIndex(SensorContainer.TimeSensors.GPS));
                 }else{
-                    sendSensorActionToService(DEACTIVATE_SENSOR, GPS_SENSOR);
-                    sendSensorActionToService(STOP_LOGGING, GPS_SENSOR);
+                    sendSensorActionToService(DEACTIVATE_SENSOR, SensorContainer.getSensorIndex(SensorContainer.TimeSensors.GPS));
+                    sendSensorActionToService(STOP_LOGGING, SensorContainer.getSensorIndex(SensorContainer.TimeSensors.GPS));
                 }
             }
         });
@@ -118,11 +111,11 @@ public class MainActivity extends AppCompatActivity {
         LightSensorSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked){
                 if(isChecked){
-                    sendSensorActionToService(ACTIVATE_SENSOR, LIGHT_SENSOR);
-                    sendSensorActionToService(START_LOGGING, LIGHT_SENSOR);
+                    sendSensorActionToService(ACTIVATE_SENSOR, SensorContainer.getSensorIndex(SensorContainer.TimeSensors.Light));
+                    sendSensorActionToService(START_LOGGING, SensorContainer.getSensorIndex(SensorContainer.TimeSensors.Light));
                 }else{
-                    sendSensorActionToService(DEACTIVATE_SENSOR, LIGHT_SENSOR);
-                    sendSensorActionToService(STOP_LOGGING, LIGHT_SENSOR);
+                    sendSensorActionToService(DEACTIVATE_SENSOR, SensorContainer.getSensorIndex(SensorContainer.TimeSensors.Light));
+                    sendSensorActionToService(STOP_LOGGING, SensorContainer.getSensorIndex(SensorContainer.TimeSensors.Light));
                 }
             }
         });
@@ -130,11 +123,11 @@ public class MainActivity extends AppCompatActivity {
         CellSensorSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener(){
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked){
                 if(isChecked){
-                    sendSensorActionToService(ACTIVATE_SENSOR, CELL_SENSOR);
-                    sendSensorActionToService(START_LOGGING, CELL_SENSOR);
+                    sendSensorActionToService(ACTIVATE_SENSOR, SensorContainer.getSensorIndex(SensorContainer.TimeSensors.Cell));
+                    sendSensorActionToService(START_LOGGING, SensorContainer.getSensorIndex(SensorContainer.TimeSensors.Cell));
                 }else{
-                    sendSensorActionToService(DEACTIVATE_SENSOR, CELL_SENSOR);
-                    sendSensorActionToService(STOP_LOGGING, CELL_SENSOR);
+                    sendSensorActionToService(DEACTIVATE_SENSOR, SensorContainer.getSensorIndex(SensorContainer.TimeSensors.Cell));
+                    sendSensorActionToService(STOP_LOGGING, SensorContainer.getSensorIndex(SensorContainer.TimeSensors.Cell));
                 }
             }
         });

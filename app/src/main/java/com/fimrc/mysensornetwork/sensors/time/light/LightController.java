@@ -65,7 +65,7 @@ public class LightController extends SensorTimeController {
     }
 
     private SensorEventListener lightsensorlistener = new SensorEventListener() {
-        //Erfassen einer Änderung des Sensors um den aktuellen Wert zu speichern.
+        //Erfassen einer Änderung des Sensor um den aktuellen Wert zu speichern.
         public void onSensorChanged(SensorEvent event) {
             light = event.values[0];
             sensorManager.unregisterListener(lightsensorlistener, Light);
