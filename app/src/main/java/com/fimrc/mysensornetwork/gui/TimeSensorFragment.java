@@ -1,19 +1,24 @@
 package com.fimrc.mysensornetwork.gui;
 
 
-import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
+import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.TableLayout;
-import android.widget.TableRow;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.fimrc.mysensornetwork.R;
@@ -21,101 +26,164 @@ import com.fimrc.mysensornetwork.SensorService;
 import com.fimrc.mysensornetwork.sensors.SensorContainer;
 import com.fimrc.sensorfusionframework.sensors.SensorManager;
 
-import java.util.ArrayList;
+
 
 /**
  * Created by Sven on 16.03.2017.
  */
 
-public class TimeSensorFragment extends Fragment implements View.OnClickListener {
+public class TimeSensorFragment extends Fragment {
 
-    ArrayList<TableRow> tableRowList = new ArrayList<>();
-    ArrayList<Button> buttonList = new ArrayList<>();
-    private final int buttonWidth = 98;
-    private final int buttonHeigth = 100;
-    private TableLayout tableLayout;
     private View myView;
+    private ListView listView;
+    private String[] timeSensorList;
+    private String[] timeSensorDescriptionList;
+    private int indexcorrection;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        Log.d("Fragment", "on CreateView - EventSensorFragment");
+        Log.d("Fragment", "on CreateView - TimeSensorFragment");
 
         myView = inflater.inflate(R.layout.time_sensor_fragment, container, false);
+        indexcorrection = SensorContainer.eventSensorCount();
 
-        if (savedInstanceState != null) {
-            for(int row = 0; row < SensorContainer.TimeSensors.values().length; row++) {
-                if (!SensorManager.instance().getSensor(SensorContainer.getSensorIndex(SensorContainer.getTimeSensor(getId()))).isActive()) {
-                    Bitmap originalBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.sensor_off);
-                    Bitmap scaledBitmap = Bitmap.createScaledBitmap(originalBitmap, buttonWidth, buttonHeigth, true);
-                    Resources resources = getResources();
-                    buttonList.get(getId()).setBackground(new BitmapDrawable(resources, scaledBitmap));
-                } else {
-                    Bitmap originalBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.sensor_on);
-                    Bitmap scaledBitmap = Bitmap.createScaledBitmap(originalBitmap, buttonWidth, buttonHeigth, true);
-                    Resources resources = getResources();
-                    buttonList.get(getId()).setBackground(new BitmapDrawable(resources, scaledBitmap));
+        timeSensorList = new String[SensorContainer.timeSensorCount()];
+        for(int i = 0; i< SensorContainer.timeSensorCount();i++){
+            timeSensorList[i] = SensorContainer.getSensor(i+indexcorrection).timeSensor.toString();
+        }
+
+        listView = (ListView)myView.findViewById(R.id.time_listView);
+        timeSensorDescriptionList = getResources().getStringArray(R.array.timeSensorDescription);
+        TimeSensorFragment.myAdapter adapter = new TimeSensorFragment.myAdapter(container.getContext());
+        listView.setAdapter(adapter);
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                if(!SensorManager.instance().getSensor(indexcorrection+position).isActive()){
+                    ((MainActivity)getActivity()).sendSensorActionToService(SensorService.ACTIVATE_SENSOR, indexcorrection+position);
+                    ((MainActivity)getActivity()).sendSensorActionToService(SensorService.START_LOGGING, indexcorrection+position);
+                    ((ImageView)(view.findViewById(R.id.single_row_time_imageView))).setImageResource(R.drawable.sensor_on);
+                    ((TextView)view.findViewById(R.id.single_row_time_showTimerSet)).setText("");
+                    view.findViewById(R.id.single_row_time_setTimerButton).setVisibility(View.VISIBLE);
+                    view.findViewById(R.id.single_row_time_setTimerButton).setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            getUserInputForNewTimer();
+                        }
+                    });
+                }else{
+                    ((MainActivity)getActivity()).sendSensorActionToService(SensorService.STOP_LOGGING, indexcorrection+position);
+                    ((MainActivity)getActivity()).sendSensorActionToService(SensorService.DEACTIVATE_SENSOR, indexcorrection+position);
+                    ((ImageView)(view.findViewById(R.id.single_row_time_imageView))).setImageResource(R.drawable.sensor_off);
+                    ((TextView)view.findViewById(R.id.single_row_time_showTimerSet)).setText("No Timer active - Sensor deactivated");
+                    view.findViewById(R.id.single_row_time_setTimerButton).setVisibility(View.GONE);
                 }
             }
-        }else{
-            initialize();
-        }
+        });
+
         return myView;
     }
 
-    private void initialize(){
-        tableLayout = (TableLayout) myView.findViewById(R.id.time_table_layout);
-        for(int row = 0; row < SensorContainer.timeSensorCount(); row++){
-            TableRow tableRow = new TableRow(this.getContext());
-            tableRow.setLayoutParams(new TableLayout.LayoutParams(
-                    TableLayout.LayoutParams.MATCH_PARENT,
-                    TableLayout.LayoutParams.MATCH_PARENT,
-                    1.0f));
-            tableLayout.addView(tableRow);
 
-            TextView textView = new TextView(this.getContext());
-            textView.setText(SensorContainer.getTimeSensor(row).toString());
-            tableRow.addView(textView);
+    class myAdapter extends ArrayAdapter<String> {
 
-            Button button = new Button(this.getContext());
-            button.setId(row);
-            buttonList.add(button);
-            button.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if(!SensorManager.instance().getSensor(SensorContainer.getSensorIndex(SensorContainer.getTimeSensor(v.getId()))).isActive()) {
-                        Bitmap originalBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.sensor_on);
-                        Bitmap scaledBitmap = Bitmap.createScaledBitmap(originalBitmap, buttonWidth, buttonHeigth, true);
-                        Resources resources = getResources();
-                        buttonList.get(v.getId()).setBackground(new BitmapDrawable(resources, scaledBitmap));
-                        ((MainActivity)getActivity()).sendSensorActionToService(SensorService.ACTIVATE_SENSOR, SensorContainer.getSensorIndex(SensorContainer.getTimeSensor(v.getId())));
-                        ((MainActivity)getActivity()).sendSensorActionToService(SensorService.START_LOGGING, SensorContainer.getSensorIndex(SensorContainer.getTimeSensor(v.getId())));
-                    }else{
-                        Bitmap originalBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.sensor_off);
-                        Bitmap scaledBitmap = Bitmap.createScaledBitmap(originalBitmap, buttonWidth, buttonHeigth, true);
-                        Resources resources = getResources();
-                        buttonList.get(v.getId()).setBackground(new BitmapDrawable(resources, scaledBitmap));
-                        ((MainActivity)getActivity()).sendSensorActionToService(SensorService.STOP_LOGGING, SensorContainer.getSensorIndex(SensorContainer.getTimeSensor(v.getId())));
-                        ((MainActivity)getActivity()).sendSensorActionToService(SensorService.DEACTIVATE_SENSOR, SensorContainer.getSensorIndex(SensorContainer.getTimeSensor(v.getId())));
-                    }
-                }
-            });
+        Context context;
+        MyViewHolder holder;
 
-            tableRow.addView(button);
+        public myAdapter(Context context) {
+            super(context, R.layout.single_row_time, R.id.single_row_time_sensorName, timeSensorList);
+            this.context = context;
+        }
 
-            if(!SensorManager.instance().getSensor(SensorContainer.getSensorIndex(SensorContainer.getTimeSensor(row))).isActive()) {
-                Bitmap originalBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.sensor_off);
-                Bitmap scaledBitmap = Bitmap.createScaledBitmap(originalBitmap, buttonWidth, buttonHeigth, true);
-                Resources resources = getResources();
-                buttonList.get(row).setBackground(new BitmapDrawable(resources, scaledBitmap));
-            }else{
-                Bitmap originalBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.sensor_on);
-                Bitmap scaledBitmap = Bitmap.createScaledBitmap(originalBitmap, buttonWidth, buttonHeigth, true);
-                Resources resources = getResources();
-                buttonList.get(row).setBackground(new BitmapDrawable(resources, scaledBitmap));
+        @Override
+        public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+            View row = convertView;
+            holder = null;
+            if(row == null) { //erster Aufruf
+                LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                row = inflater.inflate(R.layout.single_row_time, parent, false);
+                holder = new MyViewHolder(row);
+                row.setTag(holder);
+            }else{ //recycling
+                holder = (MyViewHolder)row.getTag();
             }
 
-            tableRowList.add(row, tableRow);
+            if(SensorManager.instance().getSensor(indexcorrection+position).isActive()) {
+                holder.myImage.setImageResource(R.drawable.sensor_on);
+                holder.showTimerSet.setText("");
+                holder.setTimerButton.setVisibility(View.VISIBLE);
+                holder.setTimerButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        getUserInputForNewTimer();
+                    }
+                });
+            }else {
+                holder.myImage.setImageResource(R.drawable.sensor_off);
+                holder.setTimerButton.setVisibility(View.GONE);
+                holder.showTimerSet.setText("No Timer active - Sensor deactivated");
+            }
+            holder.mySensorName.setText(SensorContainer.getSensor(indexcorrection+position).timeSensor.toString());
+            holder.mySensorDescription.setText(timeSensorDescriptionList[position]);
+
+            return row;
         }
+    }
+    class MyViewHolder {
+        ImageView myImage;
+        TextView mySensorName;
+        TextView mySensorDescription;
+        ImageView setTimerButton;
+        TextView showTimerSet;
+
+        MyViewHolder(View v){
+            myImage=(ImageView)v.findViewById(R.id.single_row_time_imageView);
+            mySensorName = (TextView)v.findViewById(R.id.single_row_time_sensorName);
+            mySensorDescription = (TextView)v.findViewById(R.id.single_row_time_sensorDescription);
+            setTimerButton = (ImageView) v.findViewById(R.id.single_row_time_setTimerButton);
+            showTimerSet = (TextView) v.findViewById(R.id.single_row_time_showTimerSet);
+        }
+    }
+
+    private void getUserInputForNewTimer(){
+        AlertDialog.Builder alert = new AlertDialog.Builder(this.getActivity());
+        alert.setMessage("What interval should the sensor use? (Type in seconds)");
+        alert.setTitle("New Timer");
+
+        final EditText input = new EditText(this.getActivity().getBaseContext());
+        input.setTextColor(Color.BLACK);
+        input.setInputType(InputType.TYPE_CLASS_NUMBER);
+        alert.setView(input);
+
+        alert.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                int inputNumber = Integer.parseInt(input.getText().toString());
+                if(inputNumber < 60){
+                    new AlertDialog.Builder(TimeSensorFragment.this.getActivity())
+                            .setTitle("Error")
+                            .setMessage("You input have to be at least 60 seconds")
+                            .setPositiveButton("OK", new DialogInterface.OnClickListener(){
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.cancel();
+                                }
+                            })
+                            .show();
+                }else{
+                    //methodenaufruf
+                }
+            }
+        });
+        alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        alert.show();
     }
 
     @Override
@@ -123,20 +191,5 @@ public class TimeSensorFragment extends Fragment implements View.OnClickListener
         super.onSaveInstanceState(outState);
         // Save internal values if necessary
     }
-
-    @Override
-    public void onClick(View v) {
-        buttonList.get(0).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Bitmap originalBitmap = BitmapFactory.decodeResource(getResources(), R.drawable.sensor_on);
-                Bitmap scaledBitmap = Bitmap.createScaledBitmap(originalBitmap, buttonWidth, buttonHeigth, true);
-                Resources resources = getResources();
-                buttonList.get(0).setBackground(new BitmapDrawable(resources, scaledBitmap));
-            }
-        });
-
-    }
-
 
 }

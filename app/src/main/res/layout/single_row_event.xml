@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageView
+        android:id="@+id/single_row_event_imageView"
+        android:layout_margin="10dp"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:src="@drawable/sensor_off"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"/>
+
+    <TextView
+        android:id="@+id/single_row_event_sensorName"
+        android:layout_width="280dp"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/single_row_event_imageView"
+        android:layout_toEndOf="@+id/single_row_event_imageView"
+        android:text=""
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <TextView
+        android:id="@+id/single_row_event_sensorDescription"
+        android:layout_width="280dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/single_row_event_sensorName"
+        android:layout_toEndOf="@+id/single_row_event_imageView"
+        android:text="" />
+
+</RelativeLayout>
