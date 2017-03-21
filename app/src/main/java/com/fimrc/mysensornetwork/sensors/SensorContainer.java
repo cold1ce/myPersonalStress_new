@@ -28,9 +28,18 @@ public class SensorContainer {
         Cell
     }
 
-    public static int getNumberOfSensors(){
+    public static int eventSensorCount(){
+        return EventSensors.values().length;
+    }
+
+    public static int timeSensorCount(){
+        return TimeSensors.values().length;
+    }
+
+    public static int sensorCount(){
         return EventSensors.values().length + TimeSensors.values().length;
     }
+
     public static int getSensorIndex(SensorContainer.EventSensors sensor){
         return SensorContainer.EventSensors.valueOf(sensor.toString()).ordinal();
     }
@@ -40,21 +49,27 @@ public class SensorContainer {
         return SensorContainer.TimeSensors.valueOf(sensor.toString()).ordinal()+numberEventSensors;
     }
 
-    public static SensorTypes getSensor(int index){
+    public static SensorPackage getSensor(int index){
         int numberEventSensors = EventSensors.values().length;
         int numberTimeSensors = TimeSensors.values().length;
         if(index > (numberEventSensors + numberTimeSensors)-1)
             throw new IndexOutOfBoundsException("Index too high for number of Sensors");
         if(index < numberEventSensors)
-            return new SensorTypes(EventSensors.values()[index], null);
-        return new SensorTypes(null, TimeSensors.values()[((index - numberEventSensors))]);
+            return new SensorPackage(EventSensors.values()[index], null);
+        return new SensorPackage(null, TimeSensors.values()[((index - numberEventSensors))]);
     }
 
-    public static class SensorTypes {
+    public static SensorContainer.TimeSensors getTimeSensor(int index){
+        if(!(index < timeSensorCount()))
+            throw new IndexOutOfBoundsException("Index too high for number of Sensors");
+        return getSensor(index + eventSensorCount()).timeSensor;
+    }
+
+    public static class SensorPackage {
         public final SensorContainer.EventSensors eventSensor;
         public final SensorContainer.TimeSensors timeSensor;
 
-        public SensorTypes(SensorContainer.EventSensors eventSensor, SensorContainer.TimeSensors timeSensor){
+        public SensorPackage(SensorContainer.EventSensors eventSensor, SensorContainer.TimeSensors timeSensor){
             this.eventSensor = eventSensor;
             this.timeSensor = timeSensor;
         }

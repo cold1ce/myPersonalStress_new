@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.telephony.TelephonyManager;
+import android.util.Log;
 
 import com.fimrc.mysensornetwork.persistence.DatabaseLogger;
 import com.fimrc.sensorfusionframework.persistence.PersistenceLogger;
@@ -25,6 +26,7 @@ public class CallModule extends SensorModule {
 
     @Override
     public boolean activate() {
+        Log.d("Sensor", "Screen activate");
         IntentFilter filterOutgoingCall = new IntentFilter(Intent.ACTION_NEW_OUTGOING_CALL);
         IntentFilter filterStateChanged = new IntentFilter(TelephonyManager.ACTION_PHONE_STATE_CHANGED);
         context.registerReceiver(controller, filterOutgoingCall);

@@ -3,6 +3,7 @@ package com.fimrc.mysensornetwork.sensors.event.screen;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.util.Log;
 
 import com.fimrc.mysensornetwork.persistence.DatabaseLogger;
 import com.fimrc.sensorfusionframework.persistence.PersistenceLogger;
@@ -24,6 +25,7 @@ public class ScreenModule extends SensorModule {
 
     @Override
     public boolean activate() {
+        Log.d("Sensor", "Screen activate");
         IntentFilter filterON = new IntentFilter(Intent.ACTION_SCREEN_ON);
         IntentFilter filterOFF = new IntentFilter(Intent.ACTION_SCREEN_OFF);
         context.registerReceiver(controller, filterON);
