@@ -19,8 +19,8 @@ public class CallModule extends SensorModule {
 
     private CallController controller;
 
-    public CallModule(Context context, PersistenceLogger logger, SensorRecordStructure structure){
-        super(context, logger, structure);
+    public CallModule(Context context, PersistenceLogger logger, SensorRecordStructure structure, String filterName){
+        super(context, logger, structure, filterName);
         controller = new CallController(this);
     }
 

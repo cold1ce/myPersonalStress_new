@@ -6,32 +6,26 @@ import android.content.IntentFilter;
 import com.fimrc.sensorfusionframework.persistence.PersistenceLogger;
 import com.fimrc.sensorfusionframework.persistence.structure.SensorRecordStructure;
 import com.fimrc.sensorfusionframework.sensors.SensorModule;
+import com.fimrc.sensorfusionframework.sensors.SensorTimeModule;
 
 /**
  * Created by Sven on 02.03.2017.
  */
 
-public class LightModule extends SensorModule {
+public class LightModule extends SensorTimeModule {
 
-    private LightController controller;
-
-    public LightModule(Context context, PersistenceLogger logger, SensorRecordStructure structure){
-        super(context, logger, structure);
+    public LightModule(Context context, PersistenceLogger logger, SensorRecordStructure structure, String filterName){
+        super(context, logger, structure, filterName);
         controller = new LightController(this);
     }
 
     @Override
     public boolean activate() {
-        String filterName = "LightSensor";
-        context.registerReceiver(controller, new IntentFilter(filterName));
-        controller.setAlarm(context, 60, filterName);
         return true;
     }
 
     @Override
     public boolean deactivate() {
-        context.unregisterReceiver(controller);
-        controller.cancelAlarm(context);
         return false;
     }
 

@@ -3,11 +3,13 @@ package com.fimrc.mysensornetwork.gui;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.util.Pair;
 import android.support.v7.app.AlertDialog;
 import android.text.InputType;
 import android.util.Log;
@@ -25,7 +27,7 @@ import com.fimrc.mysensornetwork.R;
 import com.fimrc.mysensornetwork.SensorService;
 import com.fimrc.mysensornetwork.sensors.SensorContainer;
 import com.fimrc.sensorfusionframework.sensors.SensorManager;
-
+import com.fimrc.sensorfusionframework.sensors.SensorTimeModule;
 
 
 /**
@@ -64,12 +66,14 @@ public class TimeSensorFragment extends Fragment {
                     ((MainActivity)getActivity()).sendSensorActionToService(SensorService.ACTIVATE_SENSOR, indexcorrection+position);
                     ((MainActivity)getActivity()).sendSensorActionToService(SensorService.START_LOGGING, indexcorrection+position);
                     ((ImageView)(view.findViewById(R.id.single_row_time_imageView))).setImageResource(R.drawable.sensor_on);
-                    ((TextView)view.findViewById(R.id.single_row_time_showTimerSet)).setText("");
+                    ((TextView)view.findViewById(R.id.single_row_time_showTimerSet)).setText("Timer set to 60 Seconds");
                     view.findViewById(R.id.single_row_time_setTimerButton).setVisibility(View.VISIBLE);
+                    myParams params = new myParams(indexcorrection+position, view.findViewById(R.id.single_row_time_showTimerSet));
+                    view.findViewById(R.id.single_row_time_setTimerButton).setTag(params);
                     view.findViewById(R.id.single_row_time_setTimerButton).setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            getUserInputForNewTimer();
+                            getUserInputForNewTimer(((int)((myParams)v.getTag()).arg1), (TextView)(((myParams)v.getTag()).arg2));
                         }
                     });
                 }else{
@@ -85,6 +89,15 @@ public class TimeSensorFragment extends Fragment {
         return myView;
     }
 
+    private class myParams{
+        Object arg1;
+        Object arg2;
+
+        public myParams(Object arg1, Object arg2){
+            this.arg1 = arg1;
+            this.arg2 = arg2;
+        }
+    }
 
     class myAdapter extends ArrayAdapter<String> {
 
@@ -111,12 +124,14 @@ public class TimeSensorFragment extends Fragment {
 
             if(SensorManager.instance().getSensor(indexcorrection+position).isActive()) {
                 holder.myImage.setImageResource(R.drawable.sensor_on);
-                holder.showTimerSet.setText("");
+                holder.showTimerSet.setText("Timer set to "+((SensorTimeModule)SensorManager.instance().getSensor(indexcorrection+position)).getTimer()+" Seconds");
                 holder.setTimerButton.setVisibility(View.VISIBLE);
+                myParams params = new myParams(indexcorrection+position, holder);
+                holder.setTimerButton.setTag(params);
                 holder.setTimerButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        getUserInputForNewTimer();
+                        getUserInputForNewTimer((int)((myParams)v.getTag()).arg1, ((MyViewHolder)((myParams)v.getTag()).arg2).showTimerSet);
                     }
                 });
             }else {
@@ -146,7 +161,7 @@ public class TimeSensorFragment extends Fragment {
         }
     }
 
-    private void getUserInputForNewTimer(){
+    private void getUserInputForNewTimer(final int sensorIndex, final TextView timeTextView){
         AlertDialog.Builder alert = new AlertDialog.Builder(this.getActivity());
         alert.setMessage("What interval should the sensor use? (Type in seconds)");
         alert.setTitle("New Timer");
@@ -156,11 +171,12 @@ public class TimeSensorFragment extends Fragment {
         input.setInputType(InputType.TYPE_CLASS_NUMBER);
         alert.setView(input);
 
+
         alert.setPositiveButton("OK", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                int inputNumber = Integer.parseInt(input.getText().toString());
-                if(inputNumber < 60){
+                int timer = Integer.parseInt(input.getText().toString());
+                if(timer < 60){
                     new AlertDialog.Builder(TimeSensorFragment.this.getActivity())
                             .setTitle("Error")
                             .setMessage("You input have to be at least 60 seconds")
@@ -172,7 +188,10 @@ public class TimeSensorFragment extends Fragment {
                             })
                             .show();
                 }else{
-                    //methodenaufruf
+                    ((SensorTimeModule)SensorManager.instance().getSensor(sensorIndex)).setTimer(timer);
+                    timeTextView.setText("Timer set to "+timer+" Seconds");
+                    //timeTextView.setText("Timer set to "+((SensorTimeModule)SensorManager.instance().getSensor(sensorIndex)).getTimer()+" Seconds");
+
                 }
             }
         });
@@ -182,7 +201,6 @@ public class TimeSensorFragment extends Fragment {
                 dialog.cancel();
             }
         });
-
         alert.show();
     }
 

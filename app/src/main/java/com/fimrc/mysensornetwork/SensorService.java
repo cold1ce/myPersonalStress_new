@@ -24,6 +24,7 @@ import com.fimrc.mysensornetwork.sensors.time.gps.GPSRecordStructure;
 import com.fimrc.mysensornetwork.sensors.time.light.LightModule;
 import com.fimrc.mysensornetwork.sensors.time.light.LightRecordStructure;
 import com.fimrc.sensorfusionframework.sensors.SensorManager;
+import com.fimrc.sensorfusionframework.sensors.SensorTimeModule;
 
 /**
  * Created by Sven on 16.03.2017.
@@ -49,10 +50,16 @@ public class SensorService extends Service {
             Log.d("handleMessageThread", String.valueOf(Thread.currentThread().getId()));
             switch(msg.arg1){
                 case ACTIVATE_SENSOR:
-                    SensorManager.instance().getSensor(msg.arg2).activateSensor();
+                    if(SensorTimeModule.class.isAssignableFrom(SensorManager.instance().getSensor(msg.arg2).getClass()))
+                        ((SensorTimeModule)SensorManager.instance().getSensor(msg.arg2)).activateTimeSensor(60);
+                    else
+                        SensorManager.instance().getSensor(msg.arg2).activateSensor();
                     break;
                 case DEACTIVATE_SENSOR:
-                    SensorManager.instance().getSensor(msg.arg2).deactivateSensor();
+                    if(SensorManager.instance().getSensor(msg.arg2).getClass() == SensorTimeModule.class)
+                        ((SensorTimeModule)SensorManager.instance().getSensor(msg.arg2)).deactivateTimeSensor();
+                    else
+                        SensorManager.instance().getSensor(msg.arg2).deactivateSensor();
                     break;
                 case START_LOGGING:
                     SensorManager.instance().getSensor(msg.arg2).startLogging();

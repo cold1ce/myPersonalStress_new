@@ -18,8 +18,8 @@ public class ScreenModule extends SensorModule {
 
     private ScreenController controller;
 
-    public ScreenModule(Context context, PersistenceLogger logger, SensorRecordStructure structure){
-        super(context, logger, structure);
+    public ScreenModule(Context context, PersistenceLogger logger, SensorRecordStructure structure, String filterName){
+        super(context, logger, structure, filterName);
         controller = new ScreenController(this);
     }
 

@@ -25,7 +25,7 @@ public class SensorModuleFactory {
             SensorRecordStructure structure = (SensorRecordStructure)Class.forName(structureClassName).getConstructor().newInstance();
             DatabaseLogger logger = new DatabaseLogger();
             logger.initialize(new Object[]{databaseName, structure, context});
-            SensorModule module = (SensorModule) Class.forName(moduleClassName).getConstructor(Context.class, PersistenceLogger.class, SensorRecordStructure.class).newInstance(context, logger, structure);
+            SensorTimeModule module = (SensorTimeModule) Class.forName(moduleClassName).getConstructor(Context.class, PersistenceLogger.class, SensorRecordStructure.class, String.class).newInstance(context, logger, structure, databaseName);
             SensorManager.instance().insertSensor(module);
             return module;
         } catch (Exception e) {
@@ -45,7 +45,7 @@ public class SensorModuleFactory {
             SensorRecordStructure structure = (SensorRecordStructure)Class.forName(structureClassName).getConstructor().newInstance();
             DatabaseLogger logger = new DatabaseLogger();
             logger.initialize(new Object[]{databaseName, structure, context});
-            SensorModule module = (SensorModule) Class.forName(moduleClassName).getConstructor(Context.class, PersistenceLogger.class, SensorRecordStructure.class).newInstance(context, logger, structure);
+            SensorModule module = (SensorModule) Class.forName(moduleClassName).getConstructor(Context.class, PersistenceLogger.class, SensorRecordStructure.class, String.class).newInstance(context, logger, structure, databaseName);
             SensorManager.instance().insertSensor(module);
             return module;
         } catch (Exception e) {
