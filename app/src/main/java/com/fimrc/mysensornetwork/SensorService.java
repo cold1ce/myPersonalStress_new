@@ -11,6 +11,7 @@ import android.os.Message;
 import android.util.Log;
 
 import com.fimrc.mysensornetwork.persistence.DatabaseLogger;
+import com.fimrc.mysensornetwork.sensors.SensorContainer;
 import com.fimrc.mysensornetwork.sensors.event.call.CallModule;
 import com.fimrc.mysensornetwork.sensors.event.call.CallRecordStructure;
 import com.fimrc.mysensornetwork.sensors.event.screen.ScreenModule;
@@ -24,6 +25,7 @@ import com.fimrc.mysensornetwork.sensors.time.gps.GPSRecordStructure;
 import com.fimrc.mysensornetwork.sensors.time.light.LightModule;
 import com.fimrc.mysensornetwork.sensors.time.light.LightRecordStructure;
 import com.fimrc.sensorfusionframework.sensors.SensorManager;
+import com.fimrc.sensorfusionframework.sensors.SensorModuleFactory;
 import com.fimrc.sensorfusionframework.sensors.SensorTimeModule;
 
 /**
@@ -36,6 +38,8 @@ public class SensorService extends Service {
     public static final int DEACTIVATE_SENSOR = 1;
     public static final int START_LOGGING = 2;
     public static final int STOP_LOGGING = 3;
+
+    private static boolean FIRST_START = true;
 
     private Looper serviceLooper;
     private ServiceHandler serviceHandler;
@@ -81,6 +85,16 @@ public class SensorService extends Service {
 
         serviceLooper = thread.getLooper();
         serviceHandler = new ServiceHandler(serviceLooper);
+
+        if(FIRST_START) {
+            //Create Sensors
+            for(int i = 0; i< SensorContainer.sensorCount(); i++){
+                if(SensorContainer.getSensor(i).eventSensor != null)
+                    SensorModuleFactory.getSensorModule(SensorContainer.getSensor(i).eventSensor, this);
+                SensorModuleFactory.getSensorModule(SensorContainer.getSensor(i).timeSensor, this);
+            }
+            FIRST_START = false;
+        }
     }
 
     @Override

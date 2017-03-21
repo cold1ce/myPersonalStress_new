@@ -20,9 +20,9 @@ public abstract class SensorTimeController extends SensorController {
         super(module);
     }
 
-    public void setAlarm(Context context, long intervalInSeconds, String FilterName ) {
+    public void setAlarm(Context context, long intervalInSeconds, String filterName ) {
         AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        Intent i = new Intent(FilterName);
+        Intent i = new Intent(filterName);
         PendingIntent pi = PendingIntent.getBroadcast(context, 0, i, 0);
         am.setInexactRepeating(AlarmManager.RTC_WAKEUP, System.currentTimeMillis(), TimeUnit.SECONDS.toMillis(intervalInSeconds), pi);
     }

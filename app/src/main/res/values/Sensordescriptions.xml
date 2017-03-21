@@ -2,12 +2,12 @@
 <resources>
     <string-array name="eventSensorDescription">
         <item>Scan Screen on and off</item>
-        <item>dont know</item>
+        <item>Logs Caller and Callee from Phone events</item>
     </string-array>
     <string-array name="timeSensorDescription">
-        <item>Audio</item>
-        <item>Cell</item>
-        <item>GPS</item>
-        <item>Light</item>
+        <item>Listen to current frequency and amplitude</item>
+        <item>Logs current GPS Data</item>
+        <item>Logs current light value of the front camera</item>
+        <item>Logs Phone reception</item>
     </string-array>
 </resources>

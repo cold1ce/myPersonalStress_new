@@ -18,11 +18,12 @@ public class GPSRecordStructure extends SensorRecordStructure {
 
     public GPSRecordStructure(){
         super(new HashMap<Integer, Pair<String, Datatypes>>(){{
-            put(1, new Pair<>("longitude", Datatypes.DOUBLE));
-            put(2, new Pair<>("latitude", Datatypes.DOUBLE));
-            put(3, new Pair<>("altitude", Datatypes.DOUBLE));
-            put(4, new Pair<>("bearing", Datatypes.DOUBLE));
-            put(5, new Pair<>("speed",  Datatypes.DOUBLE));
+            put(1, new Pair<>("provider", Datatypes.STRING));
+            put(2, new Pair<>("longitude", Datatypes.DOUBLE));
+            put(3, new Pair<>("latitude", Datatypes.DOUBLE));
+            put(4, new Pair<>("altitude", Datatypes.DOUBLE));
+            put(5, new Pair<>("bearing", Datatypes.DOUBLE));
+            put(6, new Pair<>("speed",  Datatypes.DOUBLE));
         }});
     }
 

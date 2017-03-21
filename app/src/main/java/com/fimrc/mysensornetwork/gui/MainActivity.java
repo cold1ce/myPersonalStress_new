@@ -2,10 +2,13 @@ package com.fimrc.mysensornetwork.gui;
 
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -38,13 +41,6 @@ public class MainActivity extends AppCompatActivity implements ActionBar.TabList
         //Create Service
         Intent intent = new Intent(MainActivity.this, SensorService.class);
         startService(intent);
-
-        //Create Sensors
-        for(int i=0; i<SensorContainer.sensorCount(); i++){
-            if(SensorContainer.getSensor(i).eventSensor != null)
-                SensorModuleFactory.getSensorModule(SensorContainer.getSensor(i).eventSensor, this);
-            SensorModuleFactory.getSensorModule(SensorContainer.getSensor(i).timeSensor, this);
-        }
     }
 
     private void build(){
@@ -90,5 +86,14 @@ public class MainActivity extends AppCompatActivity implements ActionBar.TabList
     @Override
     public void onTabReselected(ActionBar.Tab tab, android.support.v4.app.FragmentTransaction ft) {
 
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch(requestCode){
+            case 10:
+                if(grantResults.length>0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
+                    Log.d("Permissions", "LocationPermissions granted");
+        }
     }
 }
