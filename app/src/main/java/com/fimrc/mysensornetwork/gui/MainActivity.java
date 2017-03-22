@@ -1,7 +1,9 @@
 package com.fimrc.mysensornetwork.gui;
 
-
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -9,17 +11,13 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.widget.ListView;
-import android.widget.TextView;
-
 import com.fimrc.mysensornetwork.R;
 import com.fimrc.mysensornetwork.SensorService;
-import com.fimrc.mysensornetwork.sensors.SensorContainer;
-import com.fimrc.sensorfusionframework.sensors.SensorModuleFactory;
 
 
 public class MainActivity extends AppCompatActivity implements ActionBar.TabListener{
 
+    private static final String LOG_TAG = "MainActivity";
     private static boolean FIRST_START = true;
 
     @Override
@@ -42,7 +40,6 @@ public class MainActivity extends AppCompatActivity implements ActionBar.TabList
         Intent intent = new Intent(MainActivity.this, SensorService.class);
         startService(intent);
     }
-
     private void build(){
         ActionBar actionBar;
         ViewPager viewPager;
@@ -88,12 +85,4 @@ public class MainActivity extends AppCompatActivity implements ActionBar.TabList
 
     }
 
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        switch(requestCode){
-            case 10:
-                if(grantResults.length>0 && grantResults[0] == PackageManager.PERMISSION_GRANTED)
-                    Log.d("Permissions", "LocationPermissions granted");
-        }
-    }
 }

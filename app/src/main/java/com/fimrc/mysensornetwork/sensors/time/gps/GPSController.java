@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.os.Looper;
 import android.util.Log;
 
+import com.fimrc.mysensornetwork.L;
 import com.fimrc.sensorfusionframework.persistence.container.SensorRecord;
 import com.fimrc.sensorfusionframework.sensors.SensorModule;
 import com.fimrc.sensorfusionframework.sensors.SensorTimeController;
@@ -35,7 +36,8 @@ public class GPSController extends SensorTimeController {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        Log.d("GPSController", "onReceive started");
+        Log.d("GPSController", "onReceive started on Thread: "+Thread.currentThread().getId());
+        L.s(context, "GPS onReceive started");
         if(running)
             finishTask(myTask);
         myTask = new GPSTask();
@@ -48,7 +50,7 @@ public class GPSController extends SensorTimeController {
         module.log(record);
     }
     public void finishTask(GPSTask task){
-        Log.d("GPSController", "Task cancel");
+        Log.d("GPSController", "Task cancel on Thread: "+Thread.currentThread().getId());
         task.cancel(true);
         running = false;
     }
@@ -71,10 +73,24 @@ public class GPSController extends SensorTimeController {
             networkLocationManager = (LocationManager) GPSController.this.context.getSystemService(Context.LOCATION_SERVICE);
             //isGPSEnabled = gpslocationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
             //isNetworkEnabled = networklocationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+            Thread timerThread = new Thread(new Runnable(){
+                @Override
+                public void run() {
+                    try {
+                        Log.d("GPS AsyncTask", "GPS Timeout 30 Seconds on Thread: "+Thread.currentThread().getId());
+                        Thread.sleep(30000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    GPSController.this.finishTask(GPSTask.this);
+                }
+            });
+            timerThread.start();
         }
 
         @Override
         protected Void doInBackground(Void... params) {
+            Log.d("GPS AsyncTask", "GPS doInBackground on Thread: "+Thread.currentThread().getId());
             Looper.prepare();
             backgroundLooper = Looper.myLooper();
             try {
@@ -89,6 +105,7 @@ public class GPSController extends SensorTimeController {
 
         @Override
         public void onLocationChanged(Location location) {
+            Log.d("GPS AsyncTask", "GPS onLocationChanged on Thread: "+Thread.currentThread().getId());
             Date date = new Date(System.currentTimeMillis());
             record = new SensorRecord(GPSController.this.module.getNextIndex(), date , GPSController.this.structure);
             record.addData("provider", location.getProvider());
@@ -113,17 +130,17 @@ public class GPSController extends SensorTimeController {
 
         @Override
         public void onStatusChanged(String provider, int status, Bundle extras) {
-
+            Log.d("GPS AsyncTask", "GPS onStatusChanged on Thread: "+Thread.currentThread().getId());
         }
 
         @Override
         public void onProviderEnabled(String provider) {
-
+            Log.d("GPS AsyncTask", "GPS onProviderEnabled on Thread: "+Thread.currentThread().getId());
         }
 
         @Override
         public void onProviderDisabled(String provider) {
-
+            Log.d("GPS AsyncTask", "GPS onProviderDisabled on Thread: "+Thread.currentThread().getId());
         }
     }
 }

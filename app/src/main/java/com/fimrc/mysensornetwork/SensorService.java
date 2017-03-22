@@ -34,6 +34,8 @@ import com.fimrc.sensorfusionframework.sensors.SensorTimeModule;
 
 public class SensorService extends Service {
 
+    private final IBinder sensorBinder = new MyLocalBinder();
+
     public static final int ACTIVATE_SENSOR = 0;
     public static final int DEACTIVATE_SENSOR = 1;
     public static final int START_LOGGING = 2;
@@ -80,12 +82,16 @@ public class SensorService extends Service {
 
     @Override
     public void onCreate() {
+        Log.d("SensorService", "onCreate");
         HandlerThread thread = new HandlerThread("ServiceStartArguments", android.os.Process.THREAD_PRIORITY_BACKGROUND);
         thread.start();
-
         serviceLooper = thread.getLooper();
         serviceHandler = new ServiceHandler(serviceLooper);
 
+        /*
+        myThread = new MyThread();
+        myThread.start();
+        */
         if(FIRST_START) {
             //Create Sensors
             for(int i = 0; i< SensorContainer.sensorCount(); i++){
@@ -105,17 +111,32 @@ public class SensorService extends Service {
         msg.arg1 = intent.getIntExtra("Action", -1);
         msg.arg2 = intent.getIntExtra("Sensor", -1);
         serviceHandler.sendMessage(msg);
-
         return START_STICKY;
+    }
+
+    public void sendSensorAction(Intent intent){
+        Log.d("SensorService", "onStartCommand");
+        Message msg = serviceHandler.obtainMessage();
+        msg.arg1 = intent.getIntExtra("Action", -1);
+        msg.arg2 = intent.getIntExtra("Sensor", -1);
+        serviceHandler.sendMessage(msg);
     }
 
     @Override
     public IBinder onBind(Intent intent) {
-        return null;
+        return sensorBinder;
     }
 
     @Override
     public void onDestroy() {
         Log.d("SensorService", "onDestroy");
     }
+
+
+    public class MyLocalBinder extends Binder{
+        public SensorService getService(){
+            return SensorService.this;
+        }
+    }
+
 }
