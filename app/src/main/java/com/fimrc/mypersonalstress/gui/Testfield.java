@@ -1,30 +1,31 @@
 package com.fimrc.mypersonalstress.gui;
 
 import android.content.Intent;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
-import java.text.DateFormat;
-import java.util.Date;
-
 import android.widget.Toast;
 
-//import com.fimrc.mypersonalstress.persistence.AndroidDatabaseManager;
 import com.fimrc.mypersonalstress.persistence.DatabaseHelper;
 import com.fimrc.mysensornetwork.R;
 import com.fimrc.mysensornetwork.gui.MainActivity;
+
+import java.text.DateFormat;
+import java.util.Date;
+
+//import com.fimrc.mypersonalstress.persistence.AndroidDatabaseManager;
 
 public class Testfield extends AppCompatActivity {
     private final String TAG = "Testfield";
     private DatabaseHelper mpsDB, msnDB;
 
     //Testveränderung
+    //Testveränderung 2 am Desktop PC
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

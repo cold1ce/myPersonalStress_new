@@ -1,8 +1,6 @@
 package com.fimrc.mypersonalstress.coefficients;
 
-/**
- * Created by ZEBRA on 06.11.2017.
- */
+
 
 public class Coefficient {
     public String sensorname, sensorvalue, transformation1, transformation2, aggregation, name;
