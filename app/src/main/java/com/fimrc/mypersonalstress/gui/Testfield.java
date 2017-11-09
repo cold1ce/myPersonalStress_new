@@ -24,7 +24,7 @@ public class Testfield extends AppCompatActivity {
     private final String TAG = "Testfield";
     private DatabaseHelper mpsDB, msnDB;
 
-
+    //Testveränderung
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
