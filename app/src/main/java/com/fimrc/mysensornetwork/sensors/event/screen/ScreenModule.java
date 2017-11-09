@@ -5,38 +5,37 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.util.Log;
 
-import com.fimrc.mysensornetwork.persistence.DatabaseLogger;
-import com.fimrc.sensorfusionframework.persistence.PersistenceLogger;
-import com.fimrc.sensorfusionframework.persistence.structure.SensorRecordStructure;
-import com.fimrc.sensorfusionframework.sensors.SensorModule;
+import com.fimrc.jdcf.persistence.PersistenceLogger;
+import com.fimrc.jdcf.persistence.structure.SensorRecordStructure;
+import com.fimrc.jdcf.sensors.event.SensorEventModule;
 
 /**
  * Created by Sven on 22.02.2017.
  */
 
-public class ScreenModule extends SensorModule {
+public class ScreenModule extends SensorEventModule {
 
-    private ScreenController controller;
+    private Context context;
 
-    public ScreenModule(Context context, PersistenceLogger logger, SensorRecordStructure structure, String filterName){
-        super(context, logger, structure, filterName);
+    public ScreenModule(Context context, PersistenceLogger logger, SensorRecordStructure structure){
+        super(logger, structure);
+        this.context = context;
         controller = new ScreenController(this);
     }
 
     @Override
-    public boolean activate() {
-        Log.d("Sensor", "Screen activate");
+    public boolean activateSensor() {
+        Log.d("ScreenModule", "activateSensor");
         IntentFilter filterON = new IntentFilter(Intent.ACTION_SCREEN_ON);
         IntentFilter filterOFF = new IntentFilter(Intent.ACTION_SCREEN_OFF);
-        context.registerReceiver(controller, filterON);
-        context.registerReceiver(controller, filterOFF);
-        return true;
+        context.registerReceiver(((ScreenController)controller).mBroadcastReceiver, filterON);
+        context.registerReceiver(((ScreenController)controller).mBroadcastReceiver, filterOFF);
+        return super.activateSensor();
     }
 
     @Override
-    public boolean deactivate() {
-        context.unregisterReceiver(controller);
-        return false;
+    public boolean deactivateSensor() {
+        context.unregisterReceiver(((ScreenController)controller).mBroadcastReceiver);
+        return super.deactivateSensor();
     }
-
 }

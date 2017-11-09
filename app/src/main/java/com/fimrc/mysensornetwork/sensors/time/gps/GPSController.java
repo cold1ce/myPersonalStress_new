@@ -2,7 +2,6 @@ package com.fimrc.mysensornetwork.sensors.time.gps;
 
 
 import android.content.Context;
-import android.content.Intent;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -11,10 +10,10 @@ import android.os.Bundle;
 import android.os.Looper;
 import android.util.Log;
 
-import com.fimrc.mysensornetwork.L;
-import com.fimrc.sensorfusionframework.persistence.container.SensorRecord;
-import com.fimrc.sensorfusionframework.sensors.SensorModule;
-import com.fimrc.sensorfusionframework.sensors.SensorTimeController;
+import com.fimrc.jdcf.persistence.container.SensorRecord;
+import com.fimrc.jdcf.persistence.structure.SensorDataType;
+import com.fimrc.jdcf.sensors.SensorModule;
+import com.fimrc.jdcf.sensors.time.SensorTimeController;
 
 import java.util.Date;
 
@@ -24,6 +23,7 @@ import java.util.Date;
 
 public class GPSController extends SensorTimeController {
 
+    private SensorRecord record;
     private Context context;
     private boolean running;
     private GPSTask myTask;
@@ -34,30 +34,31 @@ public class GPSController extends SensorTimeController {
         running = false;
     }
 
-    @Override
-    public void onReceive(Context context, Intent intent) {
-        Log.d("GPSController", "onReceive started on Thread: "+Thread.currentThread().getId());
-        L.s(context, "GPS onReceive started");
-        if(running)
-            finishTask(myTask);
-        myTask = new GPSTask();
-        myTask.execute();
-        running = true;
-    }
-
-
-    public void logSensorRecord(SensorRecord record){
-        module.log(record);
-    }
     public void finishTask(GPSTask task){
         Log.d("GPSController", "Task cancel on Thread: "+Thread.currentThread().getId());
         task.cancel(true);
         running = false;
     }
 
+    @Override
+    protected SensorRecord buildSensorRecord() {
+        if(running)
+            finishTask(myTask);
+        myTask = new GPSTask();
+        try{
+            myTask.execute();
+            running = true;
+        }catch(Exception e) {
+            running = false;
+            e.printStackTrace();
+        }
+        while(running == true && myTask.getStatus() != AsyncTask.Status.FINISHED){}
+        return record;
+    }
+
     private class GPSTask extends AsyncTask<Void,Void, Void> implements LocationListener{
 
-        private SensorRecord record;
+
         private LocationManager gpsLocationManager;
         private LocationManager networkLocationManager;
         private boolean gpsDone;
@@ -108,13 +109,12 @@ public class GPSController extends SensorTimeController {
             Log.d("GPS AsyncTask", "GPS onLocationChanged on Thread: "+Thread.currentThread().getId());
             Date date = new Date(System.currentTimeMillis());
             record = new SensorRecord(GPSController.this.module.getNextIndex(), date , GPSController.this.structure);
-            record.addData("provider", location.getProvider());
-            record.addData("longitude", location.getLatitude());
-            record.addData("latitude", location.getLatitude());
-            record.addData("altitude", location.getAltitude());
-            record.addData("bearing", location.getBearing());
-            record.addData("speed", location.getSpeed());
-            GPSController.this.logSensorRecord(record);
+            record.addData("provider", SensorDataType.STRING, location.getProvider());
+            record.addData("longitude", SensorDataType.DOUBLE, location.getLatitude());
+            record.addData("latitude", SensorDataType.DOUBLE, location.getLatitude());
+            record.addData("altitude", SensorDataType.DOUBLE, location.getAltitude());
+            record.addData("bearing", SensorDataType.DOUBLE, location.getBearing());
+            record.addData("speed", SensorDataType.DOUBLE, location.getSpeed());
             if(location.getProvider().equals("gps")) {
                 gpsLocationManager.removeUpdates(this);
                 gpsDone = true;

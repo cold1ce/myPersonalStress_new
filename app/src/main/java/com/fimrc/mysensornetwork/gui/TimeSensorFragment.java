@@ -21,11 +21,13 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.fimrc.jdcf.sensors.time.SensorTimeModule;
 import com.fimrc.mysensornetwork.R;
 import com.fimrc.mysensornetwork.SensorService;
 import com.fimrc.mysensornetwork.sensors.SensorContainer;
-import com.fimrc.sensorfusionframework.sensors.SensorManager;
-import com.fimrc.sensorfusionframework.sensors.SensorTimeModule;
+import com.fimrc.mysensornetwork.sensors.SensorManagerStorage;
+import com.fimrc.mysensornetwork.sensors.event.SensorEventContainer;
+import com.fimrc.mysensornetwork.sensors.time.SensorTimeContainer;
 
 
 /**
@@ -36,20 +38,18 @@ public class TimeSensorFragment extends Fragment {
 
     private View myView;
     private ListView listView;
-    private String[] timeSensorList;
     private String[] timeSensorDescriptionList;
-    private int indexcorrection;
+    private String[] timeSensorList;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         Log.d("Fragment", "on CreateView - TimeSensorFragment");
 
         myView = inflater.inflate(R.layout.time_sensor_fragment, container, false);
-        indexcorrection = SensorContainer.eventSensorCount();
 
-        timeSensorList = new String[SensorContainer.timeSensorCount()];
-        for(int i = 0; i< SensorContainer.timeSensorCount();i++){
-            timeSensorList[i] = SensorContainer.getSensor(i+indexcorrection).timeSensor.toString();
+        timeSensorList = new String[SensorTimeContainer.values().length];
+        for(int i=0; i<SensorTimeContainer.values().length ; i++){
+            timeSensorList[i] = String.valueOf(SensorTimeContainer.values()[i]);
         }
 
         listView = (ListView)myView.findViewById(R.id.time_listView);
@@ -60,13 +60,13 @@ public class TimeSensorFragment extends Fragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if(!SensorManager.instance().getSensor(indexcorrection+position).isActive()){
-                    ((MainActivity)getActivity()).sendSensorActionToService(SensorService.ACTIVATE_SENSOR, indexcorrection+position);
-                    ((MainActivity)getActivity()).sendSensorActionToService(SensorService.START_LOGGING, indexcorrection+position);
+                if(!SensorManagerStorage.instance().getSensorManager(SensorContainer.time).getSensor(SensorTimeContainer.values()[position]).isActive()){
+                    ((MainActivity)getActivity()).sendSensorActionToService(SensorService.ACTIVATE_SENSOR, SensorTimeContainer.values()[position]);
+                    ((MainActivity)getActivity()).sendSensorActionToService(SensorService.START_LOGGING, SensorTimeContainer.values()[position]);
                     ((ImageView)(view.findViewById(R.id.single_row_time_imageView))).setImageResource(R.drawable.sensor_on);
-                    ((TextView)view.findViewById(R.id.single_row_time_showTimerSet)).setText("Timer set to 60 Seconds");
+                    ((TextView)view.findViewById(R.id.single_row_time_showTimerSet)).setText("Timer set to 1 Second");
                     view.findViewById(R.id.single_row_time_setTimerButton).setVisibility(View.VISIBLE);
-                    myParams params = new myParams(indexcorrection+position, view.findViewById(R.id.single_row_time_showTimerSet));
+                    myParams params = new myParams(position, view.findViewById(R.id.single_row_time_showTimerSet));
                     view.findViewById(R.id.single_row_time_setTimerButton).setTag(params);
                     view.findViewById(R.id.single_row_time_setTimerButton).setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -75,8 +75,8 @@ public class TimeSensorFragment extends Fragment {
                         }
                     });
                 }else{
-                    ((MainActivity)getActivity()).sendSensorActionToService(SensorService.STOP_LOGGING, indexcorrection+position);
-                    ((MainActivity)getActivity()).sendSensorActionToService(SensorService.DEACTIVATE_SENSOR, indexcorrection+position);
+                    ((MainActivity)getActivity()).sendSensorActionToService(SensorService.STOP_LOGGING, SensorTimeContainer.values()[position]);
+                    ((MainActivity)getActivity()).sendSensorActionToService(SensorService.DEACTIVATE_SENSOR, SensorTimeContainer.values()[position]);
                     ((ImageView)(view.findViewById(R.id.single_row_time_imageView))).setImageResource(R.drawable.sensor_off);
                     ((TextView)view.findViewById(R.id.single_row_time_showTimerSet)).setText("No Timer active - Sensor deactivated");
                     view.findViewById(R.id.single_row_time_setTimerButton).setVisibility(View.GONE);
@@ -120,11 +120,11 @@ public class TimeSensorFragment extends Fragment {
                 holder = (MyViewHolder)row.getTag();
             }
 
-            if(SensorManager.instance().getSensor(indexcorrection+position).isActive()) {
+            if(SensorManagerStorage.instance().getSensorManager(SensorContainer.time).getSensor(SensorTimeContainer.values()[position]).isActive()) {
                 holder.myImage.setImageResource(R.drawable.sensor_on);
-                holder.showTimerSet.setText("Timer set to "+((SensorTimeModule)SensorManager.instance().getSensor(indexcorrection+position)).getTimer()+" Seconds");
+                holder.showTimerSet.setText("Timer set to "+(((SensorTimeModule)SensorManagerStorage.instance().getSensorManager(SensorContainer.time).getSensor(SensorTimeContainer.values()[position])).getDelay())/1000+" Seconds");
                 holder.setTimerButton.setVisibility(View.VISIBLE);
-                myParams params = new myParams(indexcorrection+position, holder);
+                myParams params = new myParams(position, holder);
                 holder.setTimerButton.setTag(params);
                 holder.setTimerButton.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -137,7 +137,7 @@ public class TimeSensorFragment extends Fragment {
                 holder.setTimerButton.setVisibility(View.GONE);
                 holder.showTimerSet.setText("No Timer active - Sensor deactivated");
             }
-            holder.mySensorName.setText(SensorContainer.getSensor(indexcorrection+position).timeSensor.toString());
+            holder.mySensorName.setText(SensorTimeContainer.values()[position].toString());
             holder.mySensorDescription.setText(timeSensorDescriptionList[position]);
 
             return row;
@@ -174,10 +174,10 @@ public class TimeSensorFragment extends Fragment {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 int timer = Integer.parseInt(input.getText().toString());
-                if(timer < 60){
+                if(timer < 1){
                     new AlertDialog.Builder(TimeSensorFragment.this.getActivity())
                             .setTitle("Error")
-                            .setMessage("You input have to be at least 60 seconds")
+                            .setMessage("You input have to be at least 1 second")
                             .setPositiveButton("OK", new DialogInterface.OnClickListener(){
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
@@ -186,7 +186,7 @@ public class TimeSensorFragment extends Fragment {
                             })
                             .show();
                 }else{
-                    ((SensorTimeModule)SensorManager.instance().getSensor(sensorIndex)).setTimer(timer);
+                    ((SensorTimeModule)SensorManagerStorage.instance().getSensorManager(SensorContainer.time).getSensor(SensorTimeContainer.values()[sensorIndex])).setDelay(timer*1000);
                     timeTextView.setText("Timer set to "+timer+" Seconds");
                     //timeTextView.setText("Timer set to "+((SensorTimeModule)SensorManager.instance().getSensor(sensorIndex)).getTimer()+" Seconds");
 

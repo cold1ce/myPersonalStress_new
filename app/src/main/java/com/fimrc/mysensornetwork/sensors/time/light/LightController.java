@@ -1,7 +1,6 @@
 package com.fimrc.mysensornetwork.sensors.time.light;
 
 import android.content.Context;
-import android.content.Intent;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -9,8 +8,10 @@ import android.hardware.SensorManager;
 import android.os.Handler;
 import android.os.HandlerThread;
 
-import com.fimrc.sensorfusionframework.persistence.container.SensorRecord;
-import com.fimrc.sensorfusionframework.sensors.SensorTimeController;
+
+import com.fimrc.jdcf.persistence.container.SensorRecord;
+import com.fimrc.jdcf.persistence.structure.SensorDataType;
+import com.fimrc.jdcf.sensors.time.SensorTimeController;
 
 import java.util.Date;
 
@@ -25,16 +26,19 @@ public class LightController extends SensorTimeController {
     private float light;
     private SensorManager sensorManager;
     private Sensor Light;
+    private Context context;
 
     HandlerThread mHandlerThread;
     Handler handler;
 
-    public LightController(LightModule module){
+    public LightController(LightModule module, Context context){
         super(module);
+        this.context = context;
     }
 
+
     @Override
-    public void onReceive(Context context, Intent intent) {
+    protected SensorRecord buildSensorRecord() {
         Date date = new Date(System.currentTimeMillis());
         SensorRecord record = new SensorRecord(module.getNextIndex(), date , structure);
 
@@ -48,10 +52,11 @@ public class LightController extends SensorTimeController {
             }
         }
 
-        record.addData("light", light);
+        record.addData("light", SensorDataType.INTEGER, light);
 
         mHandlerThread.quit();
-        module.log(record);
+        logSensorRecord(record);
+        return null;
     }
 
     private void initialize(Context context) {
@@ -76,4 +81,5 @@ public class LightController extends SensorTimeController {
         public void onAccuracyChanged(Sensor sensor, int accuracy) {
         }
     };
+
 }

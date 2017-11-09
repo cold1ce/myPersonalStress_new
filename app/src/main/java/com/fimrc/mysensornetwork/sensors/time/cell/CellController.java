@@ -12,21 +12,23 @@ import android.telephony.SignalStrength;
 import android.telephony.TelephonyManager;
 import android.telephony.gsm.GsmCellLocation;
 
-import com.fimrc.sensorfusionframework.persistence.container.SensorRecord;
-import com.fimrc.sensorfusionframework.sensors.SensorModule;
-import com.fimrc.sensorfusionframework.sensors.SensorTimeController;
+
+import com.fimrc.jdcf.persistence.container.SensorRecord;
+import com.fimrc.jdcf.persistence.structure.SensorDataType;
+import com.fimrc.jdcf.sensors.SensorModule;
+import com.fimrc.jdcf.sensors.time.SensorTimeController;
 
 import java.util.Date;
-import java.util.HashMap;
 
 /**
  * Created by Sven on 10.03.2017.
  */
 
-public class CellController extends SensorTimeController{
+public class CellController extends SensorTimeController {
 
     private TelephonyManager tm;
     private Handler mHandler;
+    private Context context;
 
     // sensor data
     private int cellID, cellLac, mcc, signal, signal_bar, data_state, roaming = 0;
@@ -35,12 +37,13 @@ public class CellController extends SensorTimeController{
     private boolean initialized = false;
 
 
-    public CellController(SensorModule module) {
+    public CellController(SensorModule module, Context context) {
         super(module);
+        this.context = context;
     }
 
     @Override
-    public void onReceive(Context context, Intent intent) {
+    protected SensorRecord buildSensorRecord() {
         Date date = new Date(System.currentTimeMillis());
         SensorRecord record = new SensorRecord(module.getNextIndex(), date , structure);
 
@@ -51,22 +54,19 @@ public class CellController extends SensorTimeController{
         tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
 
         if (tm == null){
-            module.log(record);
-            return;
+            return record;
         }
 
         // if it is not a GSM phone, return right away
         if (tm.getPhoneType() != TelephonyManager.PHONE_TYPE_GSM){
-            module.log(record);
-            return;
+            return record;
         }
 
         // register my CellSensorListener for getting signal strength, location
         // changes and data connection state events
         // but only if airplane mode is not enabled!
         if (Settings.System.getInt(context.getContentResolver(), Settings.Global.AIRPLANE_MODE_ON, 0) != 0){
-            module.log(record);
-            return;
+            return record;
         }
 
         mHandlerThread.start();
@@ -81,18 +81,18 @@ public class CellController extends SensorTimeController{
             }
         }
 
-        record.addData("cellID",+cellID);
-        record.addData("cellLac",+cellLac);
-        record.addData("roaming",+roaming);
-        record.addData("signal",+signal);
-        record.addData("signal_bar",+signal_bar);
-        record.addData("data_state",+data_state);
-        record.addData("mcc",+mcc);
+        record.addData("cellID", SensorDataType.INTEGER, cellID);
+        record.addData("cellLac", SensorDataType.INTEGER, cellLac);
+        record.addData("roaming", SensorDataType.INTEGER, roaming);
+        record.addData("signal", SensorDataType.INTEGER, signal);
+        record.addData("signal_bar", SensorDataType.INTEGER, signal_bar);
+        record.addData("data_state", SensorDataType.INTEGER, data_state);
+        record.addData("mcc", SensorDataType.INTEGER, mcc);
 
         tm.listen(cellHandler, PhoneStateListener.LISTEN_NONE);
         mHandlerThread.quit();
 
-        module.log(record);
+        return record;
     }
 
 

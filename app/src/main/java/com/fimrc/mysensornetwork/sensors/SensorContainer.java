@@ -15,8 +15,12 @@ package com.fimrc.mysensornetwork.sensors;
 */
 
 
-public class SensorContainer {
+public enum SensorContainer{
 
+    time,
+    event
+
+    /*
     public enum EventSensors {
         Screen,
         Call
@@ -75,5 +79,6 @@ public class SensorContainer {
         }
 
     }
+    */
 
 }

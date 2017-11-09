@@ -4,13 +4,12 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
-import android.util.Pair;
 
-import com.fimrc.sensorfusionframework.persistence.structure.Datatypes;
-import com.fimrc.sensorfusionframework.persistence.structure.SensorRecordStructure;
+import com.fimrc.jdcf.persistence.container.SensorDataField;
+import com.fimrc.jdcf.persistence.structure.SensorDataType;
+import com.fimrc.jdcf.persistence.structure.SensorRecordStructure;
 
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * Created by Sven on 17.02.2017.
@@ -30,14 +29,13 @@ public final class mySQLiteHelper extends SQLiteOpenHelper {
     public mySQLiteHelper(String TableName, SensorRecordStructure structure, Context context){
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
         this.TableName = TableName;
-        HashMap<Integer, Pair<String, Datatypes>> structureList = structure.getStructure();
         StringBuilder sb = new StringBuilder();
         sb.append("CREATE TABLE IF NOT EXISTS "+TableName+" ("
                 +COLUMN_ID+" INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + COLUMN_TIMESTAMP + " DATE NOT NULL");
-        for(int i=0; i<structureList.size(); i++){
+        for(int i=0; i<structure.size(); i++){
             sb.append(", "+structure.getNameAtIndex(i));
-            switch(structure.getDatatypeAtIndex(i)) {
+            switch(structure.getDataTypeAtIndex(i)) {
                 case STRING:
                     sb.append(" VARCHAR(30)");
                     break;

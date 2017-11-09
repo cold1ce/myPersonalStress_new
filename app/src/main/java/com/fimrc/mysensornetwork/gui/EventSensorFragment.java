@@ -1,12 +1,7 @@
 package com.fimrc.mysensornetwork.gui;
 
 import android.content.Context;
-import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
-import android.support.annotation.LayoutRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -16,19 +11,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.TableLayout;
-import android.widget.TableRow;
 import android.widget.TextView;
 
 import com.fimrc.mysensornetwork.R;
 import com.fimrc.mysensornetwork.SensorService;
 import com.fimrc.mysensornetwork.sensors.SensorContainer;
-import com.fimrc.sensorfusionframework.sensors.SensorManager;
+import com.fimrc.mysensornetwork.sensors.SensorManagerStorage;
+import com.fimrc.mysensornetwork.sensors.event.SensorEventContainer;
 
-import java.util.ArrayList;
 
 
 /**
@@ -39,8 +31,8 @@ public class EventSensorFragment extends Fragment {
 
     private View myView;
     private ListView listView;
-    private String[] eventSensorList;
     private String[] eventSensorDescriptionList;
+    private String[] eventSensorList;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -48,9 +40,9 @@ public class EventSensorFragment extends Fragment {
 
         myView = inflater.inflate(R.layout.event_sensor_fragment, container, false);
 
-        eventSensorList = new String[SensorContainer.eventSensorCount()];
-        for(int i = 0; i< SensorContainer.eventSensorCount();i++){
-            eventSensorList[i] = SensorContainer.getSensor(i).eventSensor.toString();
+        eventSensorList = new String[SensorEventContainer.values().length];
+        for(int i=0; i< SensorEventContainer.values().length; i++){
+            eventSensorList[i] = String.valueOf(SensorEventContainer.values()[i]);
         }
 
         listView = (ListView)myView.findViewById(R.id.event_listView);
@@ -61,13 +53,13 @@ public class EventSensorFragment extends Fragment {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if(!SensorManager.instance().getSensor(position).isActive()){
-                    ((MainActivity)getActivity()).sendSensorActionToService(SensorService.ACTIVATE_SENSOR, position);
-                    ((MainActivity)getActivity()).sendSensorActionToService(SensorService.START_LOGGING, position);
+                if(!SensorManagerStorage.instance().getSensorManager(SensorContainer.event).getSensor(SensorEventContainer.values()[position]).isActive()){
+                    ((MainActivity)getActivity()).sendSensorActionToService(SensorService.ACTIVATE_SENSOR, SensorEventContainer.values()[position]);
+                    ((MainActivity)getActivity()).sendSensorActionToService(SensorService.START_LOGGING, SensorEventContainer.values()[position]);
                     ((ImageView)(view.findViewById(R.id.single_row_event_imageView))).setImageResource(R.drawable.sensor_on);
                 }else{
-                    ((MainActivity)getActivity()).sendSensorActionToService(SensorService.STOP_LOGGING, position);
-                    ((MainActivity)getActivity()).sendSensorActionToService(SensorService.DEACTIVATE_SENSOR, position);
+                    ((MainActivity)getActivity()).sendSensorActionToService(SensorService.STOP_LOGGING, SensorEventContainer.values()[position]);
+                    ((MainActivity)getActivity()).sendSensorActionToService(SensorService.DEACTIVATE_SENSOR, SensorEventContainer.values()[position]);
                     ((ImageView)(view.findViewById(R.id.single_row_event_imageView))).setImageResource(R.drawable.sensor_off);
                 }
             }
@@ -99,13 +91,13 @@ public class EventSensorFragment extends Fragment {
                 holder = (MyViewHolder)row.getTag();
             }
 
-            if(SensorManager.instance().getSensor(position).isActive())
+            if(SensorManagerStorage.instance().getSensorManager(SensorContainer.event).getSensor(SensorEventContainer.values()[position]).isActive())
                 holder.myImage.setImageResource(R.drawable.sensor_on);
             else
                 holder.myImage.setImageResource(R.drawable.sensor_off);
 
-            holder.mySensorName.setText(SensorContainer.getSensor(position).eventSensor.toString());
-            holder.mySensorDescription.setText(eventSensorDescriptionList[position]);
+            holder.mySensorName.setText(SensorEventContainer.values()[position].toString());
+            //holder.mySensorDescription.setText(eventSensorDescriptionList[position]);
 
             return row;
         }

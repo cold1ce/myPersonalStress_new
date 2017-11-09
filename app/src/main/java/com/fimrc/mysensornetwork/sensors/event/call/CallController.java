@@ -6,8 +6,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.telephony.TelephonyManager;
 
-import com.fimrc.sensorfusionframework.persistence.container.SensorRecord;
-import com.fimrc.sensorfusionframework.sensors.SensorEventController;
+
+import com.fimrc.jdcf.persistence.container.SensorRecord;
+import com.fimrc.jdcf.persistence.structure.SensorDataType;
+import com.fimrc.jdcf.sensors.event.SensorEventController;
 
 import java.util.Date;
 
@@ -15,14 +17,25 @@ import java.util.Date;
  * Created by Sven on 23.02.2017.
  */
 
-public class CallController extends SensorEventController{
+public class CallController extends SensorEventController {
+
+    public myBroadcastReceiver mBroadcastReceiver;
 
     public CallController(CallModule module){
         super(module);
+        mBroadcastReceiver = new myBroadcastReceiver();
     }
 
-    @Override
-    public void onReceive(Context context, Intent intent) {
+
+    private class myBroadcastReceiver extends BroadcastReceiver{
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            CallController.this.receive(context, intent);
+        }
+    }
+
+
+    public void receive(Context context, Intent intent) {
         String action = intent.getAction();
         Date date = new Date(System.currentTimeMillis());
         SensorRecord record = new SensorRecord(module.getNextIndex(), date , structure);
@@ -45,8 +58,8 @@ public class CallController extends SensorEventController{
                 }
             }
         }
-        record.addData("callee",callee);
-        record.addData("caller",caller);
-        module.log(record);
+        record.addData("callee", SensorDataType.STRING, callee);
+        record.addData("caller", SensorDataType.STRING, caller);
+        logSensorRecord(record);
     }
 }

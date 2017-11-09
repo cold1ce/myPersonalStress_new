@@ -1,13 +1,9 @@
 package com.fimrc.mysensornetwork.sensors.event.call;
 
-import android.util.Pair;
-
-import com.fimrc.sensorfusionframework.persistence.container.SensorRecord;
-import com.fimrc.sensorfusionframework.persistence.structure.Datatypes;
-import com.fimrc.sensorfusionframework.persistence.structure.SensorRecordStructure;
-
-import java.util.ArrayList;
-import java.util.Arrays;
+import com.fimrc.jdcf.persistence.container.SensorDataField;
+import com.fimrc.jdcf.persistence.container.SensorRecord;
+import com.fimrc.jdcf.persistence.structure.SensorDataType;
+import com.fimrc.jdcf.persistence.structure.SensorRecordStructure;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -18,9 +14,9 @@ import java.util.Iterator;
 public class CallRecordStructure extends SensorRecordStructure {
 
     public CallRecordStructure(){
-        super(new HashMap<Integer, Pair<String, Datatypes>>(){{
-            put(1, new Pair<>("callee", Datatypes.STRING));
-            put(2, new Pair<>("caller", Datatypes.STRING));
+        super(new HashMap<Integer, SensorDataField>(){{
+            put(1, new SensorDataField("callee", SensorDataType.STRING));
+            put(2, new SensorDataField("caller", SensorDataType.STRING));
         }});
     }
 

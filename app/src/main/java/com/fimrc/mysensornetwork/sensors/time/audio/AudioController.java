@@ -6,8 +6,10 @@ import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
 
-import com.fimrc.sensorfusionframework.sensors.SensorTimeController;
-import com.fimrc.sensorfusionframework.persistence.container.SensorRecord;
+
+import com.fimrc.jdcf.persistence.container.SensorRecord;
+import com.fimrc.jdcf.persistence.structure.SensorDataType;
+import com.fimrc.jdcf.sensors.time.SensorTimeController;
 
 import java.util.Date;
 
@@ -23,6 +25,15 @@ public class AudioController extends SensorTimeController {
     int bufferSize;
     AudioRecord p;
     short[] output = null;
+
+    @Override
+    protected SensorRecord buildSensorRecord() {
+        Date date = new Date(System.currentTimeMillis());
+        SensorRecord record = new SensorRecord(module.getNextIndex(), date , structure);
+        record.addData("frequency", SensorDataType.DOUBLE, frequency());
+        record.addData("amplitude", SensorDataType.DOUBLE, amplitude());
+        return record;
+    }
 
     public AudioController(AudioModule module){
         super(module);
@@ -55,16 +66,6 @@ public class AudioController extends SensorTimeController {
                 bufferSize += bufferSize/10;
             }
         }while(buffer_error == true);
-    }
-
-
-    @Override
-    public void onReceive(Context context, Intent intent) {
-        Date date = new Date(System.currentTimeMillis());
-        SensorRecord record = new SensorRecord(module.getNextIndex(), date , structure);
-        record.addData("frequency", frequency());
-        record.addData("amplitude", amplitude());
-        module.log(record);
     }
 
     private String frequency(){
@@ -192,7 +193,5 @@ public class AudioController extends SensorTimeController {
 
         return String.valueOf(level_new);
     }
-
-
 
 }

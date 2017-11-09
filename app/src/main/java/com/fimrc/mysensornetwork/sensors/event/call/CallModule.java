@@ -4,38 +4,38 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.telephony.TelephonyManager;
-import android.util.Log;
 
-import com.fimrc.mysensornetwork.persistence.DatabaseLogger;
-import com.fimrc.sensorfusionframework.persistence.PersistenceLogger;
-import com.fimrc.sensorfusionframework.persistence.structure.SensorRecordStructure;
-import com.fimrc.sensorfusionframework.sensors.SensorModule;
+import com.fimrc.jdcf.persistence.PersistenceLogger;
+import com.fimrc.jdcf.persistence.structure.SensorRecordStructure;
+import com.fimrc.jdcf.sensors.event.SensorEventModule;
+
 
 /**
  * Created by Sven on 23.02.2017.
  */
 
-public class CallModule extends SensorModule {
+public class CallModule extends SensorEventModule {
 
-    private CallController controller;
+    private Context context;
 
-    public CallModule(Context context, PersistenceLogger logger, SensorRecordStructure structure, String filterName){
-        super(context, logger, structure, filterName);
+    public CallModule(Context context, PersistenceLogger logger, SensorRecordStructure structure){
+        super(logger, structure);
         controller = new CallController(this);
+        this.context = context;
     }
 
     @Override
-    public boolean activate() {
-        Log.d("Sensor", "Screen activate");
+    public boolean activateSensor() {
         IntentFilter filterOutgoingCall = new IntentFilter(Intent.ACTION_NEW_OUTGOING_CALL);
         IntentFilter filterStateChanged = new IntentFilter(TelephonyManager.ACTION_PHONE_STATE_CHANGED);
-        context.registerReceiver(controller, filterOutgoingCall);
-        context.registerReceiver(controller, filterStateChanged);
-        return true;
+        context.registerReceiver(((CallController)controller).mBroadcastReceiver, filterOutgoingCall);
+        context.registerReceiver(((CallController)controller).mBroadcastReceiver, filterStateChanged);
+        return super.activateSensor();
     }
 
     @Override
-    public boolean deactivate() {
-        return false;
+    public boolean deactivateSensor() {
+        context.unregisterReceiver(((CallController)controller).mBroadcastReceiver);
+        return super.deactivateSensor();
     }
 }

@@ -1,10 +1,9 @@
 package com.fimrc.mysensornetwork.sensors.time.cell;
 
-import android.util.Pair;
-
-import com.fimrc.sensorfusionframework.persistence.container.SensorRecord;
-import com.fimrc.sensorfusionframework.persistence.structure.Datatypes;
-import com.fimrc.sensorfusionframework.persistence.structure.SensorRecordStructure;
+import com.fimrc.jdcf.persistence.container.SensorDataField;
+import com.fimrc.jdcf.persistence.container.SensorRecord;
+import com.fimrc.jdcf.persistence.structure.SensorDataType;
+import com.fimrc.jdcf.persistence.structure.SensorRecordStructure;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -17,14 +16,14 @@ public class CellRecordStructure extends SensorRecordStructure {
 
 
     public CellRecordStructure() {
-        super(new HashMap<Integer, Pair<String, Datatypes>>(){{
-            put(1, new Pair<>("cellID", Datatypes.INTEGER));
-            put(2, new Pair<>("cellLac", Datatypes.INTEGER));
-            put(3, new Pair<>("roaming", Datatypes.INTEGER));
-            put(4, new Pair<>("signal", Datatypes.INTEGER));
-            put(5, new Pair<>("signal_bar", Datatypes.INTEGER));
-            put(6, new Pair<>("data_state", Datatypes.INTEGER));
-            put(7, new Pair<>("mcc", Datatypes.INTEGER));
+        super(new HashMap<Integer, SensorDataField>(){{
+            put(1, new SensorDataField("cellID", SensorDataType.INTEGER));
+            put(2, new SensorDataField("cellLac", SensorDataType.INTEGER));
+            put(3, new SensorDataField("roaming", SensorDataType.INTEGER));
+            put(4, new SensorDataField("signal", SensorDataType.INTEGER));
+            put(5, new SensorDataField("signal_bar", SensorDataType.INTEGER));
+            put(6, new SensorDataField("data_state", SensorDataType.INTEGER));
+            put(7, new SensorDataField("mcc", SensorDataType.INTEGER));
         }});
     }
 

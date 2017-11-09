@@ -2,15 +2,13 @@ package com.fimrc.mysensornetwork.persistence;
 
 
 import android.content.Context;
-import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
-import android.util.Pair;
 
-import com.fimrc.sensorfusionframework.persistence.PersistenceLogger;
-import com.fimrc.sensorfusionframework.persistence.container.SensorRecord;
-import com.fimrc.sensorfusionframework.persistence.structure.Datatypes;
-import com.fimrc.sensorfusionframework.persistence.structure.SensorRecordStructure;
+import com.fimrc.jdcf.persistence.PersistenceLogger;
+import com.fimrc.jdcf.persistence.container.SensorDataField;
+import com.fimrc.jdcf.persistence.container.SensorRecord;
+import com.fimrc.jdcf.persistence.structure.SensorRecordStructure;
 
 import java.text.Format;
 import java.text.SimpleDateFormat;
@@ -18,9 +16,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
 
 /**
  * Created by Sven on 17.02.2017.
@@ -32,12 +27,10 @@ public class DatabaseLogger extends PersistenceLogger {
     private SensorRecordStructure structure;
     private Context context;
 
-    @Override
-    public void initialize(Object[] array){
+    public DatabaseLogger(String sensorName, SensorRecordStructure structure, Context context){
         try{
-            String sensorName = array[0].toString();
-            this.structure = (SensorRecordStructure)array[1];
-            this.context = (Context)array[2];
+            this.structure = structure;
+            this.context = context;
             sqLiteHelper = new mySQLiteHelper(sensorName, structure, context);
             sqLiteHelper.cleanDatabase();
         }catch(Exception e){
@@ -46,26 +39,20 @@ public class DatabaseLogger extends PersistenceLogger {
     }
 
     @Override
-    public Iterator<SensorRecord> readAllRecords(SensorRecordStructure structure) {
-        return null;
-    }
-
-    @Override
     public void modifyAllRecords(Iterator<SensorRecord> iterator) {
 
     }
 
     @Override
-    protected void log(SensorRecord record) {
+    protected void writeSensorRecord(SensorRecord record) {
         SQLiteDatabase database = sqLiteHelper.getDatabase();
         ArrayList<Object> sensorRecordLine = convertSensorRecord(record);
-        HashMap<Integer, Pair<String,Datatypes>> structureList = structure.getStructure();
         StringBuilder sb = new StringBuilder();
         StringBuilder values = new StringBuilder();
         Date timestamp = record.getTimestamp();
         Format format = new SimpleDateFormat("yyyy-MM-dd  HH:mm:ss");
         sb.append("INSERT INTO "+ sqLiteHelper.TableName+" ("+sqLiteHelper.COLUMN_TIMESTAMP);
-        for(int i=0; i<structureList.size();i++){
+        for(int i=0; i<structure.size();i++){
             if(sensorRecordLine.get(i) != null){
                 sb.append(",'"+ structure.getNameAtIndex(i)+"'");
                 values.append(",'"+sensorRecordLine.get(i)+"'");
@@ -75,6 +62,11 @@ public class DatabaseLogger extends PersistenceLogger {
         Log.d("Database",sb.toString());
         Log.d("Database", String.valueOf(Thread.currentThread().getId()));
         database.execSQL(sb.toString());
+    }
+
+    @Override
+    protected void finalizeLogging() {
+
     }
 
     @Override

@@ -1,3 +1,20 @@
 <resources>
-    <string name="app_name">mySensorNetwork</string>
+    <string name="app_name">myPersonalStress</string>
+    <string name="title_activity_stress_questionnaire">StressQuestionnaire</string>
+
+
+    <string name="questionBeginning">Wie oft hattest du in letzter Zeit das Gefühl, </string>
+    <string name="questionEnd1">dass die Dinge nach deinen Vorstellungen verlaufen?</string>
+    <string name="questionEnd2">dass sich Aufgaben oder Probleme so aufgestaut haben, dass du diese nicht bewältigen kannst?</string>
+    <string name="questionEnd3">sicher mit deinen Aufgaben oder Problemen umgehen zu können?</string>
+    <string name="questionEnd4">wichtige Dinge in deinem Leben nicht beeinflussen zu können?</string>
+
+    <string-array name="questionEndArray">
+        <item>dass die Dinge nach deinen Vorstellungen verlaufen?</item>
+        <item>dass sich Aufgaben oder Probleme so aufgestaut haben, dass du diese nicht bewältigen kannst?</item>
+        <item>sicher mit deinen Aufgaben oder Problemen umgehen zu können?</item>
+        <item>wichtige Dinge in deinem Leben nicht beeinflussen zu können?</item>
+    </string-array>
+
+
 </resources>
