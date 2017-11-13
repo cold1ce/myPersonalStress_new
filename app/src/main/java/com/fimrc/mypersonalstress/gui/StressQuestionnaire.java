@@ -123,7 +123,7 @@ public class StressQuestionnaire extends AppCompatActivity {
             myDB.addObservationCount(obs);
             Log.d(TAG, "Schreibe neuen Score in PSSScore Tabelle in Beobachtung Nr. "+obs);
             myDB.addNewPSSScore(obs, aktuellezeit, scorebuff);
-            Intent myIntent = new Intent(StressQuestionnaire.this, StochasticGradient.class);
+            Intent myIntent = new Intent(StressQuestionnaire.this, ObservationCalculation.class);
             myIntent.putExtra("pssscore", scorebuff); //Optional parameters
             StressQuestionnaire.this.startActivity(myIntent);
         }
