@@ -20,6 +20,7 @@ public class CoefficientContainer {
         //this.coefficients[2] = new Coefficient("LightSensor", "light", "raw", "none", "max", -0.9);
         this.coefficients[2] = new Coefficient("TestSensor", "testvalue", "raw", "none", "mean", 0.3);
         Log.d(TAG, "Alle Koeffizienten erstellt.");
+        Log.d(TAG,"Length von CoefficientContainer:"+this.coefficients.length);
     }
 
 

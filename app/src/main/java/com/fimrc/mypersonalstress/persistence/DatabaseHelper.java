@@ -1,5 +1,11 @@
-package com.fimrc.mypersonalstress.persistence;
+/**
+ * DatabaseHelper
+ * Hier finden sich alle für die App notwendigen Schreib-, Lese- und Datenbankberechnungsmethoden
+ *
+ */
 
+
+package com.fimrc.mypersonalstress.persistence;
 
         import android.content.ContentValues;
         import android.content.Context;
@@ -9,17 +15,10 @@ package com.fimrc.mypersonalstress.persistence;
         import android.database.sqlite.SQLiteDatabase;
         import android.database.sqlite.SQLiteOpenHelper;
         import android.util.Log;
-
         import com.fimrc.mypersonalstress.coefficients.Coefficient;
         import com.fimrc.mypersonalstress.coefficients.SingleSensorModel;
-
         import java.util.ArrayList;
-
         import static java.sql.Types.REAL;
-
-/**
- * DatabaseHelper
- */
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String TAG = "DatabaseHelper";
@@ -62,6 +61,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         //Log.d(TAG, "Observations erstellt/exisitiert.");
         db.execSQL("CREATE TABLE IF NOT EXISTS Coefficients (ObservationNumber INTEGER)");
         //Log.d(TAG, "Coefficients erstellt/exisitiert.");
+        db.execSQL("CREATE TABLE IF NOT EXISTS Gradients (ObservationNumber INTEGER)");
+        //Log.d(TAG, "Coefficients erstellt/exisitiert.");
     }
 
     public void resetMPSDB() {
@@ -72,6 +73,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("DROP TABLE IF EXISTS CoefficientStandardDerivations");
         db.execSQL("DROP TABLE IF EXISTS Observations");
         db.execSQL("DROP TABLE IF EXISTS Coefficients");
+        db.execSQL("DROP TABLE IF EXISTS Gradients");
         Log.d(TAG, "Alle Tabellen in der MPS Datenbank gelöscht.");
     }
 
@@ -90,6 +92,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             db.insert("CoefficientStandardDerivations", null, contentValues);
             db.insert("Observations", null, contentValues);
             db.insert("Coefficients", null, contentValues);
+            db.insert("Gradients", null, contentValues);
     }
 
     public void addFirstCoefficientsRow() {
@@ -120,8 +123,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("UPDATE PSSScores SET Error = "+predictionerror1+" WHERE ObservationNumber="+(observnumn));
         db.execSQL("UPDATE PSSScores SET Error2 = "+predictionerror2+" WHERE ObservationNumber="+(observnumn));
     }
-
-
 
     public double getLastPSSScore(){
         //Log.d(TAG, "Methodenbeginn getLastPSSscore");
@@ -190,6 +191,19 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             Log.d(TAG, "Füge Koeffizientenwert für "+c.name+" bei ObsNr "+(observNumN)+" mit Wert "+valuex+ " ein");
             db.execSQL("UPDATE Coefficients SET "+c.name+" = "+valuex+" WHERE ObservationNumber="+(observNumN));
        // }
+    }
+
+    public void addNewGradient(Coefficient c, int observNumN, double valuex) {
+        Log.d(TAG, "addNewGradientMethode gestartet");
+        SQLiteDatabase db = this.getWritableDatabase();
+        if ((checkIfColumnExists(db, "Gradients", c.name)) == false) {
+            Log.d(TAG, "Die passende Spalte exisitiert nicht. Erstellen...");
+            db.execSQL("ALTER TABLE Gradients ADD COLUMN " + c.name + " REAL");
+            //Log.d(TAG, "Spalte erstellt.");
+        }
+        Log.d(TAG, "Füge Gradient für "+c.name+" bei ObsNr "+(observNumN)+" mit Wert "+valuex+ " ein");
+        db.execSQL("UPDATE Gradients SET "+c.name+" = "+valuex+" WHERE ObservationNumber="+(observNumN));
+
     }
 
     public void createTestSensorTable() {
@@ -439,7 +453,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return result ;
     }
 
-    private boolean checkIfColumnExists(SQLiteDatabase db, String tableName
+    public boolean checkIfColumnExists(SQLiteDatabase db, String tableName
             , String columnName) {
         boolean result = false ;
         Cursor cursor = null ;
@@ -457,6 +471,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         }
 
         return result ;
+    }
+
+    public double getGradientAverage(Coefficient c, int timewindow, int observnum) {
+        double value;
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery("SELECT avg("+c.name+") FROM Gradients WHERE "+observnum+" >= "+ (observnum-timewindow), null);
+        cursor.moveToLast();
+        value = cursor.getDouble(0);
+        cursor.close();
+        return value;
     }
 
 

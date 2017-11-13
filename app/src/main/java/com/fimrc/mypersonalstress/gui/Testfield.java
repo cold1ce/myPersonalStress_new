@@ -50,9 +50,11 @@ public class Testfield extends AppCompatActivity {
 
         button1.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                Intent myIntent = new Intent(Testfield.this, StressQuestionnaire.class);
+                Intent myIntent = new Intent(Testfield.this, Personalization.class);
                 //myIntent.putExtra("key", value); //Optional parameters
                 Testfield.this.startActivity(myIntent);
+
+
             }
         });
 

@@ -1,3 +1,10 @@
+/**
+ * StochasticGradientDescent
+ * Hier wird die Berechnung des Vorhersagefehlers, der daraus resultierenden Gradienten und der
+ * neuen Koeffizienten durchgeführt.
+ */
+
+
 package com.fimrc.mypersonalstress.gui;
 
 import android.content.Context;
@@ -61,7 +68,24 @@ public class StochasticGradientDescent {
             double alpha = 0.01;
             double newcoefficient = oldcoefficient - (alpha*gradient);
             Log.d(TAG, "Schreibe den neu berechneten Koeffizienten: "+newcoefficient);
+            mpsDB.addNewGradient(cc.coefficients[i], observnumn, gradient);
             mpsDB.addNewCoefficientValues(cc.coefficients[i], observnumn, newcoefficient);
+        }
+    }
+
+    public boolean checkForTermination(CoefficientContainer cc, int timewindow, double treshold, int observNumN, int maxobservations) {
+        double averagebuffer = 0.0;
+        for (int i=1; i<cc.coefficients.length; i++) {
+            averagebuffer = averagebuffer + mpsDB.getGradientAverage(cc.coefficients[i], timewindow, observNumN);
+        }
+        double average = averagebuffer/((cc.coefficients.length)-1);
+
+
+        if ((average < treshold) && (observNumN >= maxobservations)) {
+            return true;
+        }
+        else {
+            return false;
         }
     }
 

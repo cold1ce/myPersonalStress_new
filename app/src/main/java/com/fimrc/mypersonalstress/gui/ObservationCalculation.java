@@ -1,5 +1,12 @@
+/**
+ *  ObservationCalculation
+ * Hier wird das Abrufe neuer aggregierter Sensorwerte durchgeführt, welche standardisiert abgespeichert
+ * werden
+ */
+
 package com.fimrc.mypersonalstress.gui;
 
+import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -13,61 +20,42 @@ import com.fimrc.mypersonalstress.persistence.DatabaseHelper;
 import com.fimrc.mysensornetwork.R;
 import com.fimrc.mysensornetwork.gui.MainActivity;
 
-public class ObservationCalculation extends AppCompatActivity {
+public class ObservationCalculation {
     private final String TAG = "ObservationCalculation"; //Tag-String für die Debug-Ausgabe
     public DatabaseHelper mpsDB, msnDB; //Datenbankhilfsklassen für beide Datenbanken
     int currentObservationNumber; //Integer, repräsentiert die Anzahl der Abgerufenen Beobachtungen
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        //Log.d(TAG, "Start Stochastic Gradient Klasse");
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_observation_calculation);
-        mpsDB = new DatabaseHelper(this, "mypersonalstress.db");
-        msnDB = new DatabaseHelper(this, "mySensorNetwork");
-        //Log.d(TAG, "Aufruf: createAllTables"); // DOPPELT=!=!=
-        //mpsDB.createAllTables();                    //DOPEPLT!!!
-        //Log.d(TAG, "Hole den letzten PSS Score");
-        double score = mpsDB.getLastPSSScore();
-        //Log.d(TAG, "Gebe den Score aus");
-        //Toast.makeText(getApplicationContext(),"Score: "+score, Toast.LENGTH_SHORT).show();
-        Log.d(TAG, "Geholter PSS Score ist: "+score);
-        currentObservationNumber = (mpsDB.getAmountofObservationsDoneYet());
+    protected Context context;
 
-        //Log.d(TAG, "Aufruf: initialisiere KoeffizientenKontainer");
-        CoefficientContainer con = new CoefficientContainer();
-        //Log.d(TAG, "Aufruf des coefCalcLooooops");
-        observationCalculationLoop(con);
-        Log.d(TAG, "Habe alle neuen Oservation Werte geschrieben");
-        Log.d(TAG, "________________________________________________");
-        if (currentObservationNumber == 1) {
-            mpsDB.addFirstCoefficientsRow();
-            writeGeneralModelCoefficients(con);
-        }
-        StochasticGradientDescent sgd = new StochasticGradientDescent(mpsDB);
-        double predictedoutput = sgd.predictOutput(con, currentObservationNumber);
-        Log.d(TAG, "Predicted Output ist: "+predictedoutput);
-        double predictionerror = sgd.evaluatePredictionError(predictedoutput, currentObservationNumber);
-        sgd.updateCoefficientValues(con, currentObservationNumber,predictionerror);
-
+    public ObservationCalculation(DatabaseHelper msnDB, DatabaseHelper mpsDB, int currentObservationNumber) {
+        this.context = context;
+        this.msnDB = msnDB;
+        this.mpsDB = mpsDB;
+        this.currentObservationNumber = currentObservationNumber;
     }
 
-    public void observationCalculationLoop(CoefficientContainer cc) {
+    //Schleife, welche Schritt für Schritt jede im CoefficientContainer angegebene Sensor-Beobachtung
+    //ausrechnet.
+    public void calculateNewObservations(CoefficientContainer cc) {
         //for (int i=1; i<cc.coefficients.length; i++) { ////change
             for (int i=1; i<3; i++) {
                 Log.d(TAG, "____________________________________________________________________________________");
                 Log.d(TAG, "Berechnung: Beobachtung Nr."+i+" mit dem Namen: "+cc.coefficients[i].name);
-                calcTheCoeff(cc.coefficients[i], currentObservationNumber);
+                calculateSingleObservation(cc.coefficients[i], this.currentObservationNumber);
 
             }
     }
 
+    //Methode welche vor der ersten Personalisierung die Koeffizienten des General-Models in der
+    //Datenbank abspeichert.
     public void writeGeneralModelCoefficients(CoefficientContainer cc) {
         for (int i=1; i<3; i++) {
             mpsDB.addNewCoefficientValues(cc.coefficients[i], 0, cc.coefficients[i].generalmodelvalue);
         }
     }
 
-    public void calcTheCoeff (Coefficient c, int observNum) {
+    //Ausrechnen einer einzelnen Sensor-Beobachtung. Durch den Namen wird die jeweils gewünschte
+    //Aggregation ausgelesen und durchgeführt.
+    public void calculateSingleObservation (Coefficient c, int observNum) {
         //Log.d(TAG, "Koeffizient empfangen ist: "+c.name+" mit der Beobachtungsnr.: "+observNum);
         double newaggregationvalue = 0.0;
 
@@ -90,6 +78,8 @@ public class ObservationCalculation extends AppCompatActivity {
        // mpsDB.addNewCoefficientValues(c,)
     }
 
+    //Standardisierungsprozess einer Sensor-Beobachtung, sowie Schreiben der neuen standardisierten
+    //Beobachtung in die Datenbank
     public void standardisizeAggrValue(Coefficient c, double valuex, int observNumN) {
         //Log.d(TAG, "Starte die Standardisierung des Aggregierten Wertes x="+valuex+" - Beob.-Nr.: "+observNumN);
         //Log.d(TAG, "Wert runden...");
@@ -98,7 +88,7 @@ public class ObservationCalculation extends AppCompatActivity {
         //Log.d(TAG, "Rufe die getOldMean Methode auf");
         double oldmeanbuffer = mpsDB.getOldMean(c, observNumN);
         //Log.d(TAG, "Alter u-Wert von Funktion returned ist: "+oldmeanbuffer);
-       // Log.d(TAG, "Rufe die calcNewMean Methode auf");
+        // Log.d(TAG, "Rufe die calcNewMean Methode auf");
         double newmeanbuffer = calcNewMean(valuex, oldmeanbuffer, observNumN);
         Log.d(TAG, "Schreibe den neuen Mean: "+newmeanbuffer+" in die DB");
         mpsDB.addNewMean(c, observNumN, newmeanbuffer);
@@ -116,6 +106,8 @@ public class ObservationCalculation extends AppCompatActivity {
 
     }
 
+    //Berechnen eines neuen Durchschnitts der jeweiligen Sensor-Beobachtung
+    //Erforderlich für die durchzuführende Standardisierung.
     public double calcNewMean (double x, double u, int N) {
         //Log.d(TAG, "Berechne neues u:"+u+"+(("+x+"-"+u+")/"+N+")");
         double unew = u+((x-u)/N);
@@ -129,6 +121,8 @@ public class ObservationCalculation extends AppCompatActivity {
         return unew;
     }
 
+    //Berechnen einer neuen Standard-Abweichung der jeweiligen Sensor-Beobachtung
+    //Erforderlich für die durchzuführende Standardisierung.
     public double calcNewStdDer (double x, double u, int N, double o) {
         Log.d(TAG, "Berechne neue StdDer mit den übergebenen Werten x:"+x+" u: "+u+" N: "+N+" o: "+o);
         double zaehlerpart1 = (N+1);
@@ -150,6 +144,7 @@ public class ObservationCalculation extends AppCompatActivity {
         return onew;
     }
 
+    //Mathematische Standardisierungsmethode
     public double standardizise(double x, double u, double o, int N) {
         Log.d(TAG, "Standardisierung gestartet, mit x: "+x+" u: "+u+" o: "+o+" N: "+N);
         double unew = u+((x-u)/(N+1));
@@ -167,27 +162,4 @@ public class ObservationCalculation extends AppCompatActivity {
         return z;
     }
 
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.lay, menu);
-        return true;
-    }
-
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.personalization:
-                Intent myIntent1 = new Intent(ObservationCalculation.this, Testfield.class);
-                ObservationCalculation.this.startActivity(myIntent1);
-                return true;
-            case R.id.sensorsettings:
-                Intent myIntent2 = new Intent(ObservationCalculation.this, MainActivity.class);
-                ObservationCalculation.this.startActivity(myIntent2);
-                return true;
-            default:
-                // If we got here, the user's action was not recognized.
-                // Invoke the superclass to handle it.
-                return super.onOptionsItemSelected(item);
-
-        }
-    }
 }

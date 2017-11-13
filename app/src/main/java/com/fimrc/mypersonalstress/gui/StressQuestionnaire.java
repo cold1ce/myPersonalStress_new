@@ -59,8 +59,8 @@ public class StressQuestionnaire extends AppCompatActivity {
         textView5.setVisibility(View.INVISIBLE);
         textView6.setVisibility(View.INVISIBLE);
         button6.setVisibility(View.INVISIBLE);
-        Log.d(TAG, "Aufruf: createAllTables");
-        myDB.createAllTables();
+        //Log.d(TAG, "Aufruf: createAllTables");
+        //myDB.createAllTables();
 
 
         button1.setOnClickListener(new View.OnClickListener() {
@@ -123,9 +123,13 @@ public class StressQuestionnaire extends AppCompatActivity {
             myDB.addObservationCount(obs);
             Log.d(TAG, "Schreibe neuen Score in PSSScore Tabelle in Beobachtung Nr. "+obs);
             myDB.addNewPSSScore(obs, aktuellezeit, scorebuff);
-            Intent myIntent = new Intent(StressQuestionnaire.this, ObservationCalculation.class);
-            myIntent.putExtra("pssscore", scorebuff); //Optional parameters
-            StressQuestionnaire.this.startActivity(myIntent);
+
+
+            Intent intent=new Intent();
+            intent.putExtra("MESSAGE", 1);
+            setResult(1,intent);
+            finish();//finishing activity
+
         }
     };
 
