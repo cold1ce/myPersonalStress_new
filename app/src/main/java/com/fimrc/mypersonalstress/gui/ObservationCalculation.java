@@ -1,6 +1,6 @@
 /**
  *  ObservationCalculation
- * Hier wird das Abrufe neuer aggregierter Sensorwerte durchgeführt, welche standardisiert abgespeichert
+ * Hier wird das Abrufen neuer aggregierter Sensorwerte durchgeführt, welche standardisiert abgespeichert
  * werden
  */
 
@@ -37,7 +37,7 @@ public class ObservationCalculation {
     //ausrechnet.
     public void calculateNewObservations(CoefficientContainer cc) {
         //for (int i=1; i<cc.coefficients.length; i++) { ////change
-            for (int i=1; i<3; i++) {
+            for (int i=1; i<cc.coefficients.length; i++) {
                 Log.d(TAG, "____________________________________________________________________________________");
                 Log.d(TAG, "Berechnung: Beobachtung Nr."+i+" mit dem Namen: "+cc.coefficients[i].name);
                 calculateSingleObservation(cc.coefficients[i], this.currentObservationNumber);
@@ -48,7 +48,7 @@ public class ObservationCalculation {
     //Methode welche vor der ersten Personalisierung die Koeffizienten des General-Models in der
     //Datenbank abspeichert.
     public void writeGeneralModelCoefficients(CoefficientContainer cc) {
-        for (int i=1; i<3; i++) {
+        for (int i=1; i<cc.coefficients.length; i++) {
             mpsDB.addNewCoefficientValues(cc.coefficients[i], 0, cc.coefficients[i].generalmodelvalue);
         }
     }
@@ -64,11 +64,22 @@ public class ObservationCalculation {
             //Log.d(TAG, "Transformation 1 ist: raw");
             if (c.transformation2 == "none") {
                 //Log.d(TAG, "Transformation 2 ist: none");
-                if (c.aggregation == "max") {
-                    //Log.d(TAG, "Aggregation ist: max");
+                if (c.aggregation == "min") {
+                    newaggregationvalue = msnDB.getAggrMin(c.sensorname, c.sensorvalue, 60);
+                }
+                else if (c.aggregation == "max") {
                     newaggregationvalue = msnDB.getAggrMax(c.sensorname, c.sensorvalue, 60);
                 }
+                else if (c.aggregation == "range") {
+                    newaggregationvalue = msnDB.getAggrRange(c.sensorname, c.sensorvalue, 60);
+                }
+                else if (c.aggregation == "median") {
+                    newaggregationvalue = msnDB.getAggrMedian(c.sensorname, c.sensorvalue, 60);
+                }
                 else if (c.aggregation == "mean") {
+                    newaggregationvalue = msnDB.getAggrMean(c.sensorname, c.sensorvalue, 60);
+                }
+                else if (c.aggregation == "count") {
                     newaggregationvalue = msnDB.getAggrMean(c.sensorname, c.sensorvalue, 60);
                 }
             }

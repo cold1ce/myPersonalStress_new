@@ -98,7 +98,7 @@ public class Personalization extends AppCompatActivity {
         boolean terminate = sgd.checkForTermination(container, 10, 2, currentObservationNumber, 10);
         if (terminate = true) {
             //Sperre Personalisierung
-            //
+            Log.d(TAG, "TERMINATEEEEEEE.");
         }
         Log.d(TAG, "END.");
     }

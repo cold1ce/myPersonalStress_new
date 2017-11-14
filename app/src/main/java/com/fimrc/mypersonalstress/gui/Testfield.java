@@ -86,13 +86,13 @@ public class Testfield extends AppCompatActivity {
             }
         });
 
-        button5.setOnClickListener(new View.OnClickListener() {
+       /* button5.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 double min = 0.0;
                 min = mpsDB.getAggrMin();
                 Toast.makeText(getApplicationContext(),"Score: "+min, Toast.LENGTH_SHORT).show();
             }
-        });
+        });*/
 
        /* button6.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {

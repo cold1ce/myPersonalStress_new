@@ -26,7 +26,7 @@ public class StochasticGradientDescent {
     public double predictOutput(CoefficientContainer cc, int observNumN) {
         //for (int i=1; i<cc.coefficients.length; i++) { ////change
         double predictionbuffer = 0;
-        for (int i=1; i<3; i++) {
+        for (int i=1; i<cc.coefficients.length; i++) {
 
             Log.d(TAG, "Rechne Ergebnis für: "+cc.coefficients[i].name);
             predictionbuffer = predictionbuffer + skalarMe(cc.coefficients[i], observNumN);
@@ -62,7 +62,7 @@ public class StochasticGradientDescent {
     }
 
     public void updateCoefficientValues(CoefficientContainer cc, int observnumn, double prederr) {
-        for (int i=1; i<3; i++) {
+        for (int i=1; i<cc.coefficients.length; i++) {
             double gradient = calculateGradient(cc.coefficients[i], observnumn, prederr);
             double oldcoefficient = mpsDB.getOldCoefficient(cc.coefficients[i], observnumn);
             double alpha = 0.01;
