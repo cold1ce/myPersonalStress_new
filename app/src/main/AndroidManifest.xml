@@ -50,7 +50,10 @@
         <activity android:name="com.fimrc.mypersonalstress.gui.Testfield" />
         <activity android:name="com.fimrc.mypersonalstress.gui.StressQuestionnaire" />
         <activity android:name="com.fimrc.mypersonalstress.gui.ObservationCalculation" />
-        <activity android:name="com.fimrc.mypersonalstress.gui.Personalization"></activity>
+        <activity android:name="com.fimrc.mypersonalstress.gui.Personalization" />
+        <activity android:name="com.fimrc.mypersonalstress.gui.Settings"></activity>
+
     </application>
+
 
 </manifest>
