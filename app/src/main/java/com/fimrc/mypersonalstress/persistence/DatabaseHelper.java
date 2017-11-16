@@ -505,4 +505,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return value;
     }
 
+    //public double getTimeSinceLastPersonalization
+
 }
