@@ -10,15 +10,10 @@ package com.fimrc.mypersonalstress.persistence;
         import android.content.ContentValues;
         import android.content.Context;
         import android.database.Cursor;
-        import android.database.MatrixCursor;
-        import android.database.SQLException;
         import android.database.sqlite.SQLiteDatabase;
         import android.database.sqlite.SQLiteOpenHelper;
         import android.util.Log;
         import com.fimrc.mypersonalstress.coefficients.Coefficient;
-        import com.fimrc.mypersonalstress.coefficients.SingleSensorModel;
-        import java.util.ArrayList;
-        import static java.sql.Types.REAL;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String TAG = "DatabaseHelper";
@@ -425,57 +420,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return onew;
     }
 
-    private boolean checkIfColumnExists1(SQLiteDatabase inDatabase, String inTable, String columnToCheck) {
-        Log.d(TAG, "Es wird nun überprüft ob es in ''" + inTable + "'' eine Spalte namens ''" + columnToCheck + "'' gibt.");
-        Cursor mCursor = null;
-        try {
-            // Query 1 row
-            Log.d(TAG, "Query machen beim Check...");
-            mCursor = inDatabase.rawQuery("SELECT * FROM " + inTable + " LIMIT 0", null);
-
-            // getColumnIndex() gives us the index (0 to ...) of the column - otherwise we get a -1
-            if (mCursor.getColumnIndex(columnToCheck) != -1) {
-                Log.d(TAG, "Index ist nicht -1 also return true");
-                mCursor.close();
-                return true;
-            } else {
-                Log.d(TAG, "Index -1 also return false");
-                mCursor.close();
-                return false;
-            }
-
-        } catch (Exception Exp) {
-            // Something went wrong. Missing the database? The table?
-            Log.d(TAG, "When checking whether a column exists in the table, an error occurred: " + Exp.getMessage());
-            mCursor.close();
-            return false;
-        } finally {
-            if (mCursor != null) mCursor.close();
-        }
-    }
-
-    private boolean checkIfColumnExists2(SQLiteDatabase db, String tableName, String columnName) {
-        boolean result = false;
-        Cursor cursor = null;
-        Log.d(TAG, "Checkstart mit: ");
-        Log.d(TAG, "tableName: " + tableName);
-        Log.d(TAG, "columnName: " + columnName);
-        try {
-            //Query a line
-            cursor = db.rawQuery("SELECT * FROM " + tableName + " LIMIT 0"
-                    , null);
-            result = cursor != null && cursor.getColumnIndex(columnName) != -1;
-        } catch (Exception e) {
-            Log.e(TAG, "checkColumnExists1..." + e.getMessage());
-        } finally {
-            if (null != cursor && !cursor.isClosed()) {
-                cursor.close();
-            }
-        }
-
-        return result;
-    }
-
     public boolean checkIfColumnExists(SQLiteDatabase db, String tableName, String columnName) {
         boolean result = false;
         Cursor cursor = null;
@@ -506,5 +450,15 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     //public double getTimeSinceLastPersonalization
+
+    public long getTimeOfLastPersonalization() {
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery("SELECT Datum FROM PSSScores ORDER BY ObservationNumber DESC LIMIT 1", null);
+        cursor.moveToLast();
+        long ts = cursor.getLong(0);
+
+
+        return ts;
+    }
 
 }

@@ -1,6 +1,7 @@
 package com.fimrc.mypersonalstress.gui;
 
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.content.res.Resources;
@@ -35,6 +36,9 @@ public class StressQuestionnaire extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         Log.d(TAG, "Fragebogen gestartet.");
         setContentView(R.layout.activity_stress_questionnaire);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        this.setTitle("Personalisierung");
         button1 = (Button) findViewById(R.id.button1);
         button2 = (Button) findViewById(R.id.button2);
         button3 = (Button) findViewById(R.id.button3);
@@ -59,8 +63,6 @@ public class StressQuestionnaire extends AppCompatActivity {
         textView5.setVisibility(View.INVISIBLE);
         textView6.setVisibility(View.INVISIBLE);
         button6.setVisibility(View.INVISIBLE);
-        //Log.d(TAG, "Aufruf: createAllTables");
-        //myDB.createAllTables();
 
 
         button1.setOnClickListener(new View.OnClickListener() {

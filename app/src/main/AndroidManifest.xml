@@ -48,21 +48,32 @@
         <service android:name=".SensorService" />
 
         <activity android:name="com.fimrc.mypersonalstress.gui.MainMenu" />
-        <activity android:name="com.fimrc.mypersonalstress.gui.StressQuestionnaire" />
 
-        <activity android:name="com.fimrc.mypersonalstress.gui.Personalization" />
-        <activity android:name="com.fimrc.mypersonalstress.gui.Settings" />
-
-
-
-
-
-        <activity android:name="com.fimrc.mypersonalstress.gui.PersonalizationMenu" >
+        <activity android:name="com.fimrc.mypersonalstress.gui.StressQuestionnaire">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.fimrc.mypersonalstress.gui.MainMenu" />
         </activity>
 
+        <activity android:name="com.fimrc.mypersonalstress.gui.Personalization">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.fimrc.mypersonalstress.gui.MainMenu" />
+        </activity>
+
+        <activity android:name="com.fimrc.mypersonalstress.gui.Settings">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.fimrc.mypersonalstress.gui.MainMenu" />
+        </activity>
+
+        <activity android:name="com.fimrc.mypersonalstress.gui.PersonalizationMenu">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.fimrc.mypersonalstress.gui.MainMenu" />
+        </activity>
+
+        <activity android:name="com.fimrc.mypersonalstress.gui.StressPrediction"></activity>
     </application>
 
 </manifest>

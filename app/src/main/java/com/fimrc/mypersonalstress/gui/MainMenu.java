@@ -1,6 +1,7 @@
 package com.fimrc.mypersonalstress.gui;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -21,11 +22,27 @@ public class MainMenu extends AppCompatActivity {
     private final String TAG = "MainMenu";
     private DatabaseHelper mpsDB, msnDB;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mpsDB = new DatabaseHelper(this, "mypersonalstress.db");
+        msnDB = new DatabaseHelper(this, "mySensorNetwork");
+        mpsDB.createAllTables();
+
         setContentView(R.layout.activity_mainmenu);
 
+
+        SharedPreferences.Editor editor = getSharedPreferences("mps_preferences", MODE_PRIVATE).edit();
+        SharedPreferences prefs = getSharedPreferences("mps_preferences", MODE_PRIVATE);
+        boolean firststart = prefs.getBoolean("firstStart", true);
+
+
+        if (firststart == true) {
+            editor.putBoolean("firstStart", false);
+            editor.apply();
+            write_standard_preferences();
+        }
         final Button btn_personalize = (Button) findViewById(R.id.btn_personalize);
         final Button btn_printstress = (Button) findViewById(R.id.btn_printstress);
         final Button btn_settings = (Button) findViewById(R.id.btn_settings);
@@ -35,31 +52,32 @@ public class MainMenu extends AppCompatActivity {
 
         mpsDB = new DatabaseHelper(this, "mypersonalstress.db");
         msnDB = new DatabaseHelper(this, "mySensorNetwork");
+        mpsDB.createAllTables();
 
-        btn_personalize.setOnClickListener(new View.OnClickListener() {
+        btn_printstress.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                Intent myIntent = new Intent(MainMenu.this, Personalization.class);
+                Intent myIntent = new Intent(MainMenu.this, StressPrediction.class);
                 MainMenu.this.startActivity(myIntent);
             }
         });
 
-        btn_printstress.setOnClickListener(new View.OnClickListener() {
+        btn_personalize.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                Intent myIntent = new Intent(MainMenu.this, Personalization.class);
+                Intent myIntent = new Intent(MainMenu.this, PersonalizationMenu.class);
                 MainMenu.this.startActivity(myIntent);
             }
         });
 
         btn_settings.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                Intent myIntent = new Intent(MainMenu.this, Personalization.class);
+                Intent myIntent = new Intent(MainMenu.this, Settings.class);
                 MainMenu.this.startActivity(myIntent);
             }
         });
 
         btn_impress.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                Intent myIntent = new Intent(MainMenu.this, Personalization.class);
+                Intent myIntent = new Intent(MainMenu.this, PersonalizationMenu.class);
                 MainMenu.this.startActivity(myIntent);
             }
         });
@@ -80,6 +98,7 @@ public class MainMenu extends AppCompatActivity {
                 public void onClick(View v) {
                 msnDB.resetMSNDB();
                 mpsDB.resetMPSDB();
+                mpsDB.createAllTables();
                 Log.d(TAG, "Tabellen in beiden Datenbanken gelöscht.");
             }
         });
@@ -115,4 +134,15 @@ public class MainMenu extends AppCompatActivity {
         double  random = Math.random() * (max - min) + min;
         return random;
     }
+
+    public void write_standard_preferences() {
+        SharedPreferences.Editor editor = getSharedPreferences("mps_preferences", MODE_PRIVATE).edit();
+        SharedPreferences prefs = getSharedPreferences("mps_preferences", MODE_PRIVATE);
+        editor.putLong("alpha", Double.doubleToRawLongBits(0.00001));
+        editor.putInt("maxpersonalizations", 10);
+        editor.putInt("observationtimeframe", 60);
+        editor.apply();
+    }
+
+
 }

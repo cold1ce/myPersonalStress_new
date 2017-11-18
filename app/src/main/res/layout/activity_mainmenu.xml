@@ -10,9 +10,12 @@
         android:id="@+id/btn_printstress"
         android:layout_width="200dp"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="64dp"
+        android:drawableLeft="@android:drawable/ic_menu_view"
         android:text="Stress ausgeben"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -20,9 +23,12 @@
         android:id="@+id/btn_personalize"
         android:layout_width="200dp"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        android:drawableLeft="@android:drawable/ic_menu_rotate"
         android:text="Personalisierung"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btn_printstress" />
 
@@ -30,20 +36,24 @@
         android:id="@+id/btn_settings"
         android:layout_width="200dp"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        android:drawableLeft="@android:drawable/ic_menu_manage"
         android:text="Einstellungen"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btn_personalize" />
 
     <Button
         android:id="@+id/btn_testsensor_1"
-        android:layout_width="200dp"
+        android:layout_width="261dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:text="sensornetwork testsensor add values"
-        app:layout_constraintStart_toStartOf="parent"
-        tools:layout_editor_absoluteY="440dp" />
+        android:layout_marginBottom="8dp"
+        android:layout_marginStart="8dp"
+        android:text="Testsensor neue Werte"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/btn_reset"
@@ -51,19 +61,24 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
         android:text="RESET"
         android:textColor="@android:color/holo_red_dark"
         android:textSize="18dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/btn_testsensor_1" />
 
     <Button
         android:id="@+id/btn_impress"
         android:layout_width="200dp"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
+        android:drawableLeft="@android:drawable/ic_menu_info_details"
         android:text="Impressum"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btn_settings" />
 

@@ -5,7 +5,7 @@
  */
 
 
-package com.fimrc.mypersonalstress.gui;
+package com.fimrc.mypersonalstress.methods;
 
 import android.content.Context;
 import android.util.Log;

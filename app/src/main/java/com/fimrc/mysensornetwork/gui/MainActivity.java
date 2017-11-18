@@ -9,7 +9,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
-import com.fimrc.mypersonalstress.gui.Testfield;
+import com.fimrc.mypersonalstress.gui.MainMenu;
 import com.fimrc.mysensornetwork.R;
 import com.fimrc.mysensornetwork.SensorService;
 import com.fimrc.mysensornetwork.sensors.SensorContainer;
@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity implements ActionBar.TabList
         build();
 
 
-        Intent myIntent2 = new Intent(MainActivity.this, Testfield.class);
+        Intent myIntent2 = new Intent(MainActivity.this, MainMenu.class);
         //myIntent2.putExtra("key", value); //Optional parameters
         MainActivity.this.startActivity(myIntent2);
 
@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity implements ActionBar.TabList
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.personalization:
-                Intent myIntent1 = new Intent(MainActivity.this, Testfield.class);
+                Intent myIntent1 = new Intent(MainActivity.this, MainMenu.class);
                 MainActivity.this.startActivity(myIntent1);
                 return true;
 

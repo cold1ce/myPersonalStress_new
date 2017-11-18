@@ -9,10 +9,16 @@
 package com.fimrc.mypersonalstress.gui;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.TextView;
+
 import com.fimrc.mypersonalstress.coefficients.CoefficientContainer;
+import com.fimrc.mypersonalstress.methods.ObservationCalculation;
+import com.fimrc.mypersonalstress.methods.StochasticGradientDescent;
 import com.fimrc.mypersonalstress.persistence.DatabaseHelper;
 import com.fimrc.mysensornetwork.R;
 
@@ -29,7 +35,9 @@ public class Personalization extends AppCompatActivity {
         setContentView(R.layout.activity_personalization);
         mpsDB = new DatabaseHelper(this, "mypersonalstress.db");
         msnDB = new DatabaseHelper(this, "mySensorNetwork");
-        mpsDB.createAllTables();
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        this.setTitle("Personalisierung");
         startANewPersonalization();
     }
 
@@ -38,15 +46,15 @@ public class Personalization extends AppCompatActivity {
     //die Personalisierung fort.
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.d(TAG, "wieder da");
         super.onActivityResult(requestCode, resultCode, data);
-        // check if the request code is same as what is passed  here it is 2
         if(requestCode==1)
         {
             String message=data.getStringExtra("MESSAGE");
-            Log.d(TAG, "blahblah");
             mpsDB = new DatabaseHelper(this, "mypersonalstress.db");
             msnDB = new DatabaseHelper(this, "mySensorNetwork");
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+            this.setTitle("Personalisierung");
             continuePersonalization();
         }
     }
@@ -58,9 +66,20 @@ public class Personalization extends AppCompatActivity {
 
     //Fortsetzung der Personalisierung nach dem Ausfüllen des Stressfragebogens
     public void continuePersonalization() {
-        double score = mpsDB.getLastPSSScore();
-        currentObservationNumber = (mpsDB.getAmountofObservationsDoneYet());
+        final TextView tv_title = (TextView) findViewById(R.id.tv_title);
+        final TextView tv_pssscore = (TextView) findViewById(R.id.tv_pssscore);
+        final TextView tv_predictedstresslevel = (TextView) findViewById(R.id.tv_predictedstresslevel);
+        final TextView tv_predictionerror = (TextView) findViewById(R.id.tv_predictionerror);
 
+        SharedPreferences prefs = getSharedPreferences("mps_preferences", MODE_PRIVATE);
+        int maxobservations = prefs.getInt("maxpersonalizations", 10);
+
+
+        double score = mpsDB.getLastPSSScore();
+        tv_pssscore.setText((int)score+"");
+
+        currentObservationNumber = (mpsDB.getAmountofObservationsDoneYet());
+        tv_title.setText("Personalisierung "+currentObservationNumber+"/"+maxobservations+" erfolgreich durchgeführt!");
         //Initialisieren aller zu prüfenden Koeffizienten
         CoefficientContainer container = new CoefficientContainer();
 
@@ -85,10 +104,12 @@ public class Personalization extends AppCompatActivity {
 
         //Den geschätzten Stress mit Hilfe des bisherigen Modells vorhersagen
         double predictedoutput = sgd.predictOutput(container, currentObservationNumber);
+        tv_predictedstresslevel.setText(predictedoutput+"");
 
         //Mithilfe des geschätzten Stress und dem vom Benutzer angegebenen Stress den Fehler des alten
         //Modells berechnen
         double predictionerror = sgd.evaluatePredictionError(predictedoutput, currentObservationNumber);
+        tv_predictionerror.setText(Math.round((Math.sqrt(predictionerror)*100.0)/100.0)+"");
 
         //Mithilfe des ausgerechneten Fehlers neue Koeffizienten berechnen und diese abspeichern.
         sgd.updateCoefficientValues(container, currentObservationNumber,predictionerror);
