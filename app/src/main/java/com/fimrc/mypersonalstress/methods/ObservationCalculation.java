@@ -8,6 +8,7 @@ package com.fimrc.mypersonalstress.methods;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -20,11 +21,14 @@ import com.fimrc.mypersonalstress.persistence.DatabaseHelper;
 import com.fimrc.mysensornetwork.R;
 import com.fimrc.mysensornetwork.gui.MainActivity;
 
+import static android.content.Context.MODE_PRIVATE;
+
 public class ObservationCalculation {
     private final String TAG = "ObservationCalculation"; //Tag-String für die Debug-Ausgabe
     public DatabaseHelper mpsDB, msnDB; //Datenbankhilfsklassen für beide Datenbanken
     int currentObservationNumber; //Integer, repräsentiert die Anzahl der Abgerufenen Beobachtungen
     protected Context context;
+
 
     public ObservationCalculation(DatabaseHelper msnDB, DatabaseHelper mpsDB, int currentObservationNumber) {
         this.context = context;
@@ -35,12 +39,12 @@ public class ObservationCalculation {
 
     //Schleife, welche Schritt für Schritt jede im CoefficientContainer angegebene Sensor-Beobachtung
     //ausrechnet.
-    public void calculateNewObservations(CoefficientContainer cc) {
+    public void calculateNewObservations(CoefficientContainer cc, int timeframe) {
         //for (int i=1; i<cc.coefficients.length; i++) { ////change
             for (int i=1; i<cc.coefficients.length; i++) {
                 Log.d(TAG, "____________________________________________________________________________________");
                 Log.d(TAG, "Berechnung: Beobachtung Nr."+i+" mit dem Namen: "+cc.coefficients[i].name);
-                calculateSingleObservation(cc.coefficients[i], this.currentObservationNumber);
+                calculateSingleObservation(cc.coefficients[i], this.currentObservationNumber, timeframe);
 
             }
     }
@@ -55,7 +59,7 @@ public class ObservationCalculation {
 
     //Ausrechnen einer einzelnen Sensor-Beobachtung. Durch den Namen wird die jeweils gewünschte
     //Aggregation ausgelesen und durchgeführt.
-    public void calculateSingleObservation (Coefficient c, int observNum) {
+    public void calculateSingleObservation (Coefficient c, int observNum, int timeframe) {
         //Log.d(TAG, "Koeffizient empfangen ist: "+c.name+" mit der Beobachtungsnr.: "+observNum);
         double newaggregationvalue = 0.0;
 
@@ -65,22 +69,22 @@ public class ObservationCalculation {
             if (c.transformation2 == "none") {
                 //Log.d(TAG, "Transformation 2 ist: none");
                 if (c.aggregation == "min") {
-                    newaggregationvalue = msnDB.getAggrMin(c.sensorname, c.sensorvalue, 60);
+                    newaggregationvalue = msnDB.getAggrMin(c.sensorname, c.sensorvalue, timeframe);
                 }
                 else if (c.aggregation == "max") {
-                    newaggregationvalue = msnDB.getAggrMax(c.sensorname, c.sensorvalue, 60);
+                    newaggregationvalue = msnDB.getAggrMax(c.sensorname, c.sensorvalue, timeframe);
                 }
                 else if (c.aggregation == "range") {
-                    newaggregationvalue = msnDB.getAggrRange(c.sensorname, c.sensorvalue, 60);
+                    newaggregationvalue = msnDB.getAggrRange(c.sensorname, c.sensorvalue, timeframe);
                 }
                 else if (c.aggregation == "median") {
-                    newaggregationvalue = msnDB.getAggrMedian(c.sensorname, c.sensorvalue, 60);
+                    newaggregationvalue = msnDB.getAggrMedian(c.sensorname, c.sensorvalue, timeframe);
                 }
                 else if (c.aggregation == "mean") {
-                    newaggregationvalue = msnDB.getAggrMean(c.sensorname, c.sensorvalue, 60);
+                    newaggregationvalue = msnDB.getAggrMean(c.sensorname, c.sensorvalue, timeframe);
                 }
                 else if (c.aggregation == "count") {
-                    newaggregationvalue = msnDB.getAggrMean(c.sensorname, c.sensorvalue, 60);
+                    newaggregationvalue = msnDB.getAggrCount(c.sensorname, c.sensorvalue, timeframe);
                 }
             }
         }

@@ -57,7 +57,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         //Log.d(TAG, "Observations erstellt/exisitiert.");
         db.execSQL("CREATE TABLE IF NOT EXISTS Coefficients (ObservationNumber INTEGER)");
         //Log.d(TAG, "Coefficients erstellt/exisitiert.");
-        db.execSQL("CREATE TABLE IF NOT EXISTS Gradients (ObservationNumber INTEGER)");
+        db.execSQL("CREATE TABLE IF NOT EXISTS Gradients (ObservationNumber INTEGER, Average REAL)");
         //Log.d(TAG, "Coefficients erstellt/exisitiert.");
     }
 
@@ -77,6 +77,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         //Log.d(TAG, "Datenbank geöffnet");
         db.execSQL("DROP TABLE IF EXISTS TestSensor");
+        db.execSQL("DROP TABLE IF EXISTS TestSensor2");
         Log.d(TAG, "Alle Tabellen in der MSN Datenbank gelöscht.");
     }
 
@@ -206,15 +207,25 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         //Log.d(TAG, "Öffne Datenbank");
         SQLiteDatabase db = this.getWritableDatabase();
         Log.d(TAG, "Erstelle TestSensor Tabelle");
-        db.execSQL("CREATE TABLE IF NOT EXISTS TestSensor (_id INTEGER PRIMARY KEY AUTOINCREMENT, Datum DATETIME DEFAULT CURRENT_TIMESTAMP, testvalue REAL)");
+        db.execSQL("CREATE TABLE IF NOT EXISTS TestSensor (_id INTEGER PRIMARY KEY AUTOINCREMENT, Timestamp DATETIME DEFAULT CURRENT_TIMESTAMP, testvalue REAL)");
+        db.execSQL("CREATE TABLE IF NOT EXISTS TestSensor2 (_id INTEGER PRIMARY KEY AUTOINCREMENT, Timestamp DATETIME DEFAULT CURRENT_TIMESTAMP, testvalue2 TEXT)");
     }
 
     public boolean addNewTestSensorValues(long zeit, double value) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
-        contentValues.put("Datum", zeit);
+        contentValues.put("Timestamp", zeit);
         contentValues.put("testvalue", value);
         long result = db.insert("TestSensor", null, contentValues);
+        return result != -1;
+    }
+
+    public boolean addNewTestSensorValues2(long zeit, String value) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put("Timestamp", zeit);
+        contentValues.put("testvalue2", value);
+        long result = db.insert("TestSensor2", null, contentValues);
         return result != -1;
     }
 
@@ -225,8 +236,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public double getAggrMin(String sensor, String value, int timeframe) {
         double min;
+        int timeframenew = 60-timeframe; //Zeitverschiebung 1h von UTC-Zeit
         SQLiteDatabase db = this.getWritableDatabase();
-        Cursor cursor = db.rawQuery("SELECT min(" + value + ") FROM " + sensor, null);
+        Cursor cursor = db.rawQuery("SELECT min(" + value + ") FROM " + sensor+" WHERE datetime(Timestamp) > datetime(current_timestamp, '"+timeframenew+" minutes')", null);
         cursor.moveToLast();
         min = cursor.getDouble(0);
         cursor.close();
@@ -235,8 +247,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public double getAggrMax(String sensor, String value, int timeframe) {
         double max;
+        int timeframenew = 60-timeframe; //Zeitverschiebung 1h von UTC-Zeit
         SQLiteDatabase db = this.getWritableDatabase();
-        Cursor cursor = db.rawQuery("SELECT max(" + value + ") FROM " + sensor, null);
+        Cursor cursor = db.rawQuery("SELECT max(" + value + ") FROM " + sensor+" WHERE datetime(Timestamp) > datetime(current_timestamp, '"+timeframenew+" minutes')", null);
         cursor.moveToLast();
         max = cursor.getDouble(0);
         cursor.close();
@@ -245,11 +258,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public double getAggrRange(String sensor, String value, int timeframe) {
         double max, min, range = 0.0;
+        int timeframenew = 60-timeframe; //Zeitverschiebung 1h von UTC-Zeit
         SQLiteDatabase db = this.getWritableDatabase();
-        Cursor cursor = db.rawQuery("SELECT max(" + value + ") FROM " + sensor, null);
+        Cursor cursor = db.rawQuery("SELECT max(" + value + ") FROM " + sensor+" WHERE datetime(Timestamp) > datetime(current_timestamp, '"+timeframenew+" minutes')", null);
         cursor.moveToLast();
         max = cursor.getDouble(0);
-        Cursor cursor2 = db.rawQuery("SELECT min(" + value + ") FROM " + sensor, null);
+        Cursor cursor2 = db.rawQuery("SELECT min(" + value + ") FROM " + sensor+" WHERE datetime(Timestamp) > datetime(current_timestamp, '"+timeframenew+" minutes')", null);
         cursor2.moveToLast();
         min = cursor2.getDouble(0);
         range = (max - min);
@@ -261,8 +275,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public double getAggrMedian(String sensor, String value, int timeframe) {
         double max;
+        int timeframenew = 60-timeframe; //Zeitverschiebung 1h von UTC-Zeit
         SQLiteDatabase db = this.getWritableDatabase();
-        Cursor cursor = db.rawQuery("SELECT AVG(" + value + ") FROM (SELECT " + value + " FROM " + sensor + " ORDER BY " + value + " LIMIT 2 - (SELECT COUNT(*) FROM " + sensor + ") % 2 OFFSET (SELECT (COUNT(*) - 1) / 2 FROM " + sensor + "))", null);
+        //Cursor cursor = db.rawQuery("SELECT AVG(" + value + ") FROM (SELECT " + value + " FROM " + sensor +" WHERE datetime(Timestamp) > datetime(current_timestamp, '"+timeframenew+" minutes') ORDER BY " + value + " LIMIT 2 - (SELECT COUNT(*) FROM " + sensor + ") % 2 OFFSET (SELECT (COUNT(*) - 1) / 2 FROM " + sensor + " WHERE datetime(Timestamp) > datetime(current_timestamp, '"+timeframenew+" minutes')",null);
+        //Cursor cursor = db.rawQuery("SELECT AVG(" + value + ") FROM (SELECT " + value + " FROM " + sensor + " ORDER BY " + value + " LIMIT 2 - (SELECT COUNT(*) FROM " + sensor + ") % 2 OFFSET (SELECT (COUNT(*) - 1) / 2 FROM " + sensor + "))", null);
+        Cursor cursor = db.rawQuery("SELECT AVG("+value+") FROM (SELECT "+value+" FROM "+sensor+" WHERE (datetime(Timestamp) > datetime(current_timestamp, '"+timeframenew+" minutes'))ORDER BY "+value+" LIMIT 2 - (SELECT COUNT(*) FROM "+sensor+" WHERE (datetime(Timestamp) > datetime(current_timestamp, '"+timeframenew+" minutes'))) % 2 OFFSET (SELECT (COUNT(*) - 1) / 2 FROM "+sensor+" WHERE (datetime(Timestamp) > datetime(current_timestamp, '"+timeframenew+" minutes'))))", null);
         cursor.moveToLast();
         max = cursor.getDouble(0);
         cursor.close();
@@ -271,12 +288,24 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public double getAggrMean(String sensor, String value, int timeframe) {
         double mean;
+        int timeframenew = 60-timeframe; //Zeitverschiebung 1h von UTC-Zeit
         SQLiteDatabase db = this.getWritableDatabase();
-        Cursor cursor = db.rawQuery("SELECT avg(" + value + ") FROM " + sensor, null);
+        Cursor cursor = db.rawQuery("SELECT avg(" + value + ") FROM " + sensor+" WHERE datetime(Timestamp) > datetime(current_timestamp, '"+timeframenew+" minutes')", null);
         cursor.moveToLast();
         mean = cursor.getDouble(0);
         cursor.close();
         return mean;
+    }
+
+    public double getAggrCount(String sensor, String value, int timeframe) {
+        int timeframenew = 60-timeframe; //Zeitverschiebung 1h von UTC-Zeit
+        int count = 0;
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor cursor = db.rawQuery("SELECT Count(*) from "+sensor+" WHERE datetime(Timestamp) > datetime(current_timestamp, '"+timeframenew+" minutes')", null);
+        cursor.moveToLast();
+        count = cursor.getInt(0);
+        cursor.close();
+        return count;
     }
 
     public void createCoeffColumn(String sensor, String value, int observationnr, String trans1, String trans2, String aggregation) {
@@ -439,17 +468,20 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return result;
     }
 
-    public double getGradientAverage(Coefficient c, int timewindow, int observnum) {
+    public double checkGradientsAverages(int gradienttimewindow, int observnum) {
         double value;
         SQLiteDatabase db = this.getWritableDatabase();
-        Cursor cursor = db.rawQuery("SELECT avg(" + c.name + ") FROM Gradients WHERE " + observnum + " >= " + (observnum - timewindow), null);
+        Cursor cursor = db.rawQuery("SELECT max(Average) FROM Gradients WHERE " + observnum + " >= " + (observnum - gradienttimewindow), null);
         cursor.moveToLast();
         value = cursor.getDouble(0);
         cursor.close();
         return value;
     }
 
-    //public double getTimeSinceLastPersonalization
+    public void addNewGradientsAverage(double value, int observNumN) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL("UPDATE Gradients SET Average = " + value + " WHERE ObservationNumber=" + (observNumN));
+    }
 
     public long getTimeOfLastPersonalization() {
         SQLiteDatabase db = this.getWritableDatabase();

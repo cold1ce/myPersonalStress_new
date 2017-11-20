@@ -10,14 +10,15 @@ import android.util.Log;
 
 public class CoefficientContainer {
     private final String TAG = "CoefficientContainer";
-    public Coefficient[] coefficients = new Coefficient[6];
+    public Coefficient[] coefficients = new Coefficient[7];
 
     public CoefficientContainer() {
         this.coefficients[1] = new Coefficient ("TestSensor", "testvalue", "raw", "none", "min", 0.5);
         this.coefficients[2] = new Coefficient("TestSensor", "testvalue", "raw", "none", "max", 0.3);
-        this.coefficients[3] = new Coefficient("TestSensor", "testvalue", "raw", "none", "mean", 0.3);
-        this.coefficients[4] = new Coefficient("TestSensor", "testvalue", "raw", "none", "range", 0.3);
-        this.coefficients[5] = new Coefficient("TestSensor", "testvalue", "raw", "none", "median", 0.3);
+        this.coefficients[3] = new Coefficient("TestSensor", "testvalue", "raw", "none", "mean", 0.4);
+        this.coefficients[4] = new Coefficient("TestSensor", "testvalue", "raw", "none", "range", 0.1);
+        this.coefficients[5] = new Coefficient("TestSensor", "testvalue", "raw", "none", "median", 0.7);
+        this.coefficients[6] = new Coefficient("TestSensor", "testvalue", "raw", "none", "count", 0.3);
     }
 
 

@@ -62,26 +62,25 @@ public class StochasticGradientDescent {
     }
 
     public void updateCoefficientValues(CoefficientContainer cc, int observnumn, double prederr) {
+        double gradientsum = 0.0;
         for (int i=1; i<cc.coefficients.length; i++) {
             double gradient = calculateGradient(cc.coefficients[i], observnumn, prederr);
             double oldcoefficient = mpsDB.getOldCoefficient(cc.coefficients[i], observnumn);
             double alpha = 0.01;
             double newcoefficient = oldcoefficient - (alpha*gradient);
+            gradientsum = gradientsum + gradient;
             Log.d(TAG, "Schreibe den neu berechneten Koeffizienten: "+newcoefficient);
             mpsDB.addNewGradient(cc.coefficients[i], observnumn, gradient);
             mpsDB.addNewCoefficientValues(cc.coefficients[i], observnumn, newcoefficient);
         }
+        double gradientaverage = gradientsum/((cc.coefficients.length)-1);
+        mpsDB.addNewGradientsAverage(gradientaverage, observnumn);
+
     }
 
-    public boolean checkForTermination(CoefficientContainer cc, int timewindow, double treshold, int observNumN, int maxobservations) {
-        double averagebuffer = 0.0;
-        for (int i=1; i<cc.coefficients.length; i++) {
-            averagebuffer = averagebuffer + mpsDB.getGradientAverage(cc.coefficients[i], timewindow, observNumN);
-        }
-        double average = averagebuffer/((cc.coefficients.length)-1);
-
-
-        if ((average < treshold) && (observNumN >= maxobservations)) {
+    public boolean checkForTermination(CoefficientContainer cc, int gradienttimewindow, double sigmatreshold, int observNumN, int maxpersonalizations) {
+        double gradientsmaximum = mpsDB.checkGradientsAverages(gradienttimewindow, observNumN);
+        if ((gradientsmaximum < sigmatreshold) || (observNumN >= maxpersonalizations)) {
             return true;
         }
         else {

@@ -7,7 +7,19 @@
     tools:context="com.fimrc.mypersonalstress.gui.Settings">
 
     <TextView
-        android:id="@+id/textView9"
+        android:id="@+id/tv_general"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:text="Allgemeine Einstellungen"
+        android:textSize="16dp"
+        android:textStyle="bold|italic"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_perstimewindow"
         android:layout_width="wrap_content"
         android:layout_height="48dp"
         android:layout_marginStart="16dp"
@@ -16,24 +28,23 @@
         android:text="Personalisierungszeitfenster (min)"
         android:textSize="14sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/tv_general" />
 
     <EditText
-        android:id="@+id/et_timewindow"
+        android:id="@+id/et_perstimewindow"
         android:layout_width="80dp"
         android:layout_height="48dp"
         android:layout_marginEnd="8dp"
         android:layout_marginTop="16dp"
         android:ems="10"
         android:inputType="number"
-        android:text="60"
         android:textAlignment="center"
         android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/tv_general" />
 
     <TextView
-        android:id="@+id/textView11"
+        android:id="@+id/tv_alpha"
         android:layout_width="wrap_content"
         android:layout_height="48dp"
         android:layout_marginStart="16dp"
@@ -42,7 +53,7 @@
         android:text="Alpha-Wert (Lernschritt)"
         android:textSize="14sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView9" />
+        app:layout_constraintTop_toBottomOf="@+id/tv_perstimewindow" />
 
     <EditText
         android:id="@+id/et_alpha"
@@ -52,14 +63,25 @@
         android:layout_marginTop="16dp"
         android:ems="10"
         android:inputType="number|numberDecimal"
-        android:text="0.00001"
         android:textAlignment="center"
         android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/et_timewindow" />
+        app:layout_constraintTop_toBottomOf="@+id/et_perstimewindow" />
 
     <TextView
-        android:id="@+id/textView13"
+        android:id="@+id/tv_term"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="32dp"
+        android:text="Abbruchsbedingungen"
+        android:textSize="16dp"
+        android:textStyle="bold|italic"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_alpha" />
+
+    <TextView
+        android:id="@+id/tv_maxpers"
         android:layout_width="wrap_content"
         android:layout_height="48dp"
         android:layout_marginStart="16dp"
@@ -68,7 +90,7 @@
         android:text="Maximale Personalisierungen"
         android:textSize="14sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView11" />
+        app:layout_constraintTop_toBottomOf="@+id/tv_term" />
 
     <EditText
         android:id="@+id/et_maxpers"
@@ -78,21 +100,59 @@
         android:layout_marginTop="16dp"
         android:ems="10"
         android:inputType="number"
-        android:text="10"
         android:textAlignment="center"
         android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/et_alpha" />
+        app:layout_constraintTop_toBottomOf="@+id/tv_term" />
 
-    <Button
-        android:id="@+id/button"
+    <TextView
+        android:id="@+id/tv_sigmatreshold"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginStart="8dp"
-        android:drawableLeft="@android:drawable/ic_menu_save"
-        android:text="Speichern"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        android:layout_height="48dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:gravity="center_vertical"
+        android:text="Sigma-Treshold"
+        android:textSize="14sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_maxpers" />
+
+    <EditText
+        android:id="@+id/et_sigmatreshold"
+        android:layout_width="80dp"
+        android:layout_height="48dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="16dp"
+        android:ems="10"
+        android:inputType="number|numberDecimal"
+        android:textAlignment="center"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/et_maxpers" />
+
+    <TextView
+        android:id="@+id/tv_gradienttimewindow"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:gravity="center_vertical"
+        android:text="GradientWindow kt"
+        android:textSize="14sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_sigmatreshold" />
+
+    <EditText
+        android:id="@+id/et_gradienttimewindow"
+        android:layout_width="80dp"
+        android:layout_height="48dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginTop="16dp"
+        android:ems="10"
+        android:inputType="number"
+        android:textAlignment="center"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/et_sigmatreshold" />
 
 </android.support.constraint.ConstraintLayout>

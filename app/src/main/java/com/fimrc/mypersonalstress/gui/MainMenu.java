@@ -91,6 +91,10 @@ public class MainMenu extends AppCompatActivity {
                     msnDB.addNewTestSensorValues(aktuellezeit, getZufallszahl(0, 100));
                 }
                 Log.d(TAG, "Dummy-Werte für den Testsensor erstellt.");
+                for (int j=0; j<(int)(getZufallszahl(5, 25)); j++) {
+                    msnDB.addNewTestSensorValues2(aktuellezeit, "event");
+                }
+
             }
         });
 
@@ -138,9 +142,11 @@ public class MainMenu extends AppCompatActivity {
     public void write_standard_preferences() {
         SharedPreferences.Editor editor = getSharedPreferences("mps_preferences", MODE_PRIVATE).edit();
         SharedPreferences prefs = getSharedPreferences("mps_preferences", MODE_PRIVATE);
-        editor.putLong("alpha", Double.doubleToRawLongBits(0.00001));
-        editor.putInt("maxpersonalizations", 10);
-        editor.putInt("observationtimeframe", 60);
+        editor.putLong("alpha", Double.doubleToRawLongBits(1.0));
+        editor.putInt("maxpersonalizations", 1);
+        editor.putInt("observationtimeframe", 1);
+        editor.putLong("sigmatreshold", Double.doubleToRawLongBits(1.0));;
+        editor.putInt("gradienttimewindow", 1);
         editor.apply();
     }
 

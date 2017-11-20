@@ -72,14 +72,17 @@ public class Personalization extends AppCompatActivity {
         final TextView tv_predictionerror = (TextView) findViewById(R.id.tv_predictionerror);
 
         SharedPreferences prefs = getSharedPreferences("mps_preferences", MODE_PRIVATE);
-        int maxobservations = prefs.getInt("maxpersonalizations", 10);
-
+        int maxpersonalizations = prefs.getInt("maxpersonalizations", 10);
+        int gradienttimewindow = prefs.getInt("gradienttimewindow", 10);
+        double alpha = Double.longBitsToDouble(prefs.getLong("alpha", Double.doubleToLongBits(0.1)));
+        double sigmatreshold = Double.longBitsToDouble(prefs.getLong("sigmatreshold", Double.doubleToLongBits(0.1)));
+        int observationtimeframe = prefs.getInt("observationtimeframe", 10);
 
         double score = mpsDB.getLastPSSScore();
         tv_pssscore.setText((int)score+"");
 
         currentObservationNumber = (mpsDB.getAmountofObservationsDoneYet());
-        tv_title.setText("Personalisierung "+currentObservationNumber+"/"+maxobservations+" erfolgreich durchgeführt!");
+        tv_title.setText("Personalisierung "+currentObservationNumber+"/"+maxpersonalizations+" erfolgreich durchgeführt!");
         //Initialisieren aller zu prüfenden Koeffizienten
         CoefficientContainer container = new CoefficientContainer();
 
@@ -95,7 +98,7 @@ public class Personalization extends AppCompatActivity {
         }
 
         //Berechnung einer neuen Stress-Beobachtung starten, aus den SensorDaten von mySensorNetwork
-        observation.calculateNewObservations(container);
+        observation.calculateNewObservations(container, observationtimeframe);
 
         //Initialisieren einer neuen StochasticGradientDescent-Instanz, hier wird mit Hilfe der
         //inzwischen standardisiert gespeicherten Beobachtungen und dem letzten Stressfragebogen
@@ -116,7 +119,7 @@ public class Personalization extends AppCompatActivity {
 
         //Überprüfe ob weiterhin Personalisierungen notwendig sind, wenn nein, dann sperre die
         //Personalisierungsaufforderungen und die Möglichkeit manuell zu personalisieren.
-        boolean terminate = sgd.checkForTermination(container, 10, 2, currentObservationNumber, 10);
+        boolean terminate = sgd.checkForTermination(container, gradienttimewindow, sigmatreshold, currentObservationNumber, maxpersonalizations);
         if (terminate = true) {
             //Sperre Personalisierung
             Log.d(TAG, "TERMINATEEEEE.");

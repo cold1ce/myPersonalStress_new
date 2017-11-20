@@ -30,6 +30,7 @@ public class PersonalizationMenu extends AppCompatActivity {
     //public Button btn_start;
     public Handler mHandler;
     public DatabaseHelper mpsDB;
+    public Thread t;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,7 +50,7 @@ public class PersonalizationMenu extends AppCompatActivity {
 
 
 
-        Thread t = new Thread() {
+        t = new Thread() {
             @Override
             public void run() {
                 try {
@@ -92,6 +93,11 @@ public class PersonalizationMenu extends AppCompatActivity {
                 PersonalizationMenu.this.startActivity(myIntent);
             }
         });
-    }
 
+
+    }
+    public void onStop () {
+        t.interrupt();
+        super.onStop();
+    }
 }
