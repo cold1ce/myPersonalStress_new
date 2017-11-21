@@ -112,10 +112,10 @@ public class Personalization extends AppCompatActivity {
         //Mithilfe des geschätzten Stress und dem vom Benutzer angegebenen Stress den Fehler des alten
         //Modells berechnen
         double predictionerror = sgd.evaluatePredictionError(predictedoutput, currentObservationNumber);
-        tv_predictionerror.setText(Math.round((Math.sqrt(predictionerror)*100.0)/100.0)+"");
+        tv_predictionerror.setText(predictionerror+"");
 
         //Mithilfe des ausgerechneten Fehlers neue Koeffizienten berechnen und diese abspeichern.
-        sgd.updateCoefficientValues(container, currentObservationNumber,predictionerror);
+        sgd.updateCoefficientValues(container, alpha, currentObservationNumber,predictionerror);
 
         //Überprüfe ob weiterhin Personalisierungen notwendig sind, wenn nein, dann sperre die
         //Personalisierungsaufforderungen und die Möglichkeit manuell zu personalisieren.

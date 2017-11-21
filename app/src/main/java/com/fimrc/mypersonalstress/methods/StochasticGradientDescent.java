@@ -8,6 +8,7 @@
 package com.fimrc.mypersonalstress.methods;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.fimrc.mypersonalstress.coefficients.Coefficient;
@@ -49,31 +50,34 @@ public class StochasticGradientDescent {
 
     public double evaluatePredictionError(double prediction, int observNumN) {
         double y = mpsDB.getPSSScoreofObservationNumber(observNumN);
-        double e = prediction-y;
-        double e2 = Math.pow(e, 2);
+        double e = (prediction-y);
+        mpsDB.addNewPredictionError(observNumN, e);
+        Log.d(TAG, "Prediction Error e = "+e);
+        double e2 = Math.pow((prediction-y), 2);
+        mpsDB.addNewPredictionErrorSquared(observNumN, e2);
         Log.d(TAG, "Prediction Error e² = "+e2);
-        mpsDB.addNewPredictionError(observNumN, e2);
-        return e2;
+        return e;
     }
 
     public double calculateGradient(Coefficient c, int observnumn, double prederr) {
-        double gradient = 2*(Math.sqrt(prederr))*mpsDB.getObservation(c, observnumn);
+        double gradient = 2*prederr*mpsDB.getObservation(c, observnumn);
         return gradient;
     }
 
-    public void updateCoefficientValues(CoefficientContainer cc, int observnumn, double prederr) {
+    public void updateCoefficientValues(CoefficientContainer cc, double alpha, int observnumn, double prederr) {
         double gradientsum = 0.0;
         for (int i=1; i<cc.coefficients.length; i++) {
             double gradient = calculateGradient(cc.coefficients[i], observnumn, prederr);
             double oldcoefficient = mpsDB.getOldCoefficient(cc.coefficients[i], observnumn);
-            double alpha = 0.01;
             double newcoefficient = oldcoefficient - (alpha*gradient);
+            Log.d(TAG, "Berechne neuen Koeffizienten: Alter Koeffizient-(Alpha*Gradient): "+oldcoefficient+"-("+alpha+"*"+gradient+")="+newcoefficient);
             gradientsum = gradientsum + gradient;
             Log.d(TAG, "Schreibe den neu berechneten Koeffizienten: "+newcoefficient);
             mpsDB.addNewGradient(cc.coefficients[i], observnumn, gradient);
             mpsDB.addNewCoefficientValues(cc.coefficients[i], observnumn, newcoefficient);
         }
         double gradientaverage = gradientsum/((cc.coefficients.length)-1);
+        Log.d(TAG, "Der Gradienten-Average ist: "+gradientaverage);
         mpsDB.addNewGradientsAverage(gradientaverage, observnumn);
 
     }

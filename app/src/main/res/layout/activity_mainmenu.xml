@@ -7,30 +7,17 @@
     tools:context="com.fimrc.mypersonalstress.gui.mainmenu">
 
     <Button
-        android:id="@+id/btn_printstress"
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="64dp"
-        android:drawableLeft="@android:drawable/ic_menu_view"
-        android:text="Stress ausgeben"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <Button
         android:id="@+id/btn_personalize"
         android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="96dp"
         android:drawableLeft="@android:drawable/ic_menu_rotate"
         android:text="Personalisierung"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btn_printstress" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/btn_settings"
@@ -46,12 +33,55 @@
         app:layout_constraintTop_toBottomOf="@+id/btn_personalize" />
 
     <Button
-        android:id="@+id/btn_testsensor_1"
+        android:id="@+id/btn_impress"
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:drawableLeft="@android:drawable/ic_menu_info_details"
+        android:text="Impressum"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btn_settings" />
+
+    <Button
+        android:id="@+id/btn_add_x"
         android:layout_width="261dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:layout_marginStart="8dp"
-        android:text="Testsensor neue Werte"
+        android:text="add value x "
+        app:layout_constraintBottom_toTopOf="@+id/btn_add_low"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/btn_add_low"
+        android:layout_width="261dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginStart="8dp"
+        android:text="Add niedrige Stresswerte"
+        app:layout_constraintBottom_toTopOf="@+id/btn_add_high"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/btn_add_high"
+        android:layout_width="261dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginStart="8dp"
+        android:text="Add Hohe Stresswerte"
+        app:layout_constraintBottom_toTopOf="@+id/btn_add_random"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/btn_add_random"
+        android:layout_width="261dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:layout_marginStart="8dp"
+        android:text="Add Random Werte"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
@@ -67,19 +97,17 @@
         android:textSize="18dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/btn_testsensor_1" />
+        app:layout_constraintStart_toEndOf="@+id/btn_add_low" />
 
-    <Button
-        android:id="@+id/btn_impress"
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
+    <EditText
+        android:id="@+id/et_valuex"
+        android:layout_width="68dp"
+        android:layout_height="43dp"
+        android:layout_marginEnd="12dp"
         android:layout_marginTop="8dp"
-        android:drawableLeft="@android:drawable/ic_menu_info_details"
-        android:text="Impressum"
+        android:ems="10"
+        android:inputType="numberDecimal"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btn_settings" />
+        app:layout_constraintTop_toBottomOf="@+id/btn_impress" />
 
 </android.support.constraint.ConstraintLayout>

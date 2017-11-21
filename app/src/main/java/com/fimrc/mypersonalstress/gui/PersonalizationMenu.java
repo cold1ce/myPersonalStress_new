@@ -1,6 +1,7 @@
 package com.fimrc.mypersonalstress.gui;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.os.Handler;
@@ -59,14 +60,18 @@ public class PersonalizationMenu extends AppCompatActivity {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
+                                SharedPreferences prefs = getSharedPreferences("mps_preferences", MODE_PRIVATE);
+                                int observationtimeframe = prefs.getInt("observationtimeframe", 10);
                                 if (mpsDB.getAmountofObservationsDoneYet() > 0) {
                                     DateFormat df = DateFormat.getDateTimeInstance();
                                     long aktuellezeit = new Date().getTime();
                                     long ts = mpsDB.getTimeOfLastPersonalization();
                                     long timespan = aktuellezeit - ts;
-                                    if (timespan < 3600000) {
-                                        long nxtpossibility = ((3600000 - timespan) / 60000);
-                                        tv_nextpersonalization.setText("Nächste Personalisierung möglich in " + nxtpossibility + " Minuten.");
+
+                                    int observationtimeframeinmilliseconds = observationtimeframe * 60000;
+                                    if (timespan < observationtimeframeinmilliseconds) {
+                                        long nxtpossibility = ((observationtimeframeinmilliseconds - timespan) / 60000);
+                                        tv_nextpersonalization.setText("Nächste Personalisierung möglich in " + nxtpossibility + " Minute(n).");
                                         btn_start.setEnabled(false);
                                     }
                                     else {
@@ -76,7 +81,7 @@ public class PersonalizationMenu extends AppCompatActivity {
                                 }
                                 else {
                                     btn_start.setEnabled(true);
-                                    tv_nextpersonalization.setText("Noch keine Personalisierung durchgeführt.");
+                                    tv_nextpersonalization.setText("Noch keine Personalisierung durchgeführt. Bitte warten Sie mindestens "+observationtimeframe+" Minuten, bevor Sie die erste Personalisierung durchführen.");
                                 }
                             }
                         });

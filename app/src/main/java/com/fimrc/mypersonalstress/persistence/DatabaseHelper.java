@@ -15,6 +15,10 @@ package com.fimrc.mypersonalstress.persistence;
         import android.util.Log;
         import com.fimrc.mypersonalstress.coefficients.Coefficient;
 
+        import java.text.Format;
+        import java.text.SimpleDateFormat;
+        import java.util.Date;
+
 public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String TAG = "DatabaseHelper";
     public static Context context;
@@ -47,12 +51,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Log.d(TAG, "Erstelle alle Tabellen neu");
         SQLiteDatabase db = this.getWritableDatabase();
         //Log.d(TAG, "Datenbank geöffnet");
-        db.execSQL("CREATE TABLE IF NOT EXISTS PSSScores (ObservationNumber INTEGER, Datum DATETIME DEFAULT CURRENT_TIMESTAMP, Score REAL, Prediction REAL, Error REAL, Error2 REAL)");
+        db.execSQL("CREATE TABLE IF NOT EXISTS Personalizations (ObservationNumber INTEGER, Datum DATETIME DEFAULT CURRENT_TIMESTAMP, Score REAL, Prediction REAL, Error REAL, Error2 REAL)");
         //Log.d(TAG, "Coefficients erstellt/exisitiert.");
         db.execSQL("CREATE TABLE IF NOT EXISTS CoefficientMeans (ObservationNumber INTEGER)");
         //Log.d(TAG, "CoefficientMeans erstellt/exisitiert.");
-        db.execSQL("CREATE TABLE IF NOT EXISTS CoefficientStandardDerivations (ObservationNumber INTEGER)");
-        //Log.d(TAG, "CoefficientStandardDerivations erstellt/exisitiert.");
+        db.execSQL("CREATE TABLE IF NOT EXISTS StandardDeviations (ObservationNumber INTEGER)");
+        //Log.d(TAG, "StandardDeviations erstellt/exisitiert.");
         db.execSQL("CREATE TABLE IF NOT EXISTS Observations (ObservationNumber INTEGER)");
         //Log.d(TAG, "Observations erstellt/exisitiert.");
         db.execSQL("CREATE TABLE IF NOT EXISTS Coefficients (ObservationNumber INTEGER)");
@@ -64,9 +68,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void resetMPSDB() {
         SQLiteDatabase db = this.getWritableDatabase();
         //Log.d(TAG, "Datenbank geöffnet");
-        db.execSQL("DROP TABLE IF EXISTS PSSScores");
+        db.execSQL("DROP TABLE IF EXISTS Personalizations");
         db.execSQL("DROP TABLE IF EXISTS CoefficientMeans");
-        db.execSQL("DROP TABLE IF EXISTS CoefficientStandardDerivations");
+        db.execSQL("DROP TABLE IF EXISTS StandardDeviations");
         db.execSQL("DROP TABLE IF EXISTS Observations");
         db.execSQL("DROP TABLE IF EXISTS Coefficients");
         db.execSQL("DROP TABLE IF EXISTS Gradients");
@@ -76,8 +80,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void resetMSNDB() {
         SQLiteDatabase db = this.getWritableDatabase();
         //Log.d(TAG, "Datenbank geöffnet");
-        db.execSQL("DROP TABLE IF EXISTS TestSensor");
+        db.execSQL("DROP TABLE IF EXISTS TestSensor1");
         db.execSQL("DROP TABLE IF EXISTS TestSensor2");
+        db.execSQL("DROP TABLE IF EXISTS TestSensor3");
         Log.d(TAG, "Alle Tabellen in der MSN Datenbank gelöscht.");
     }
 
@@ -86,7 +91,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         ContentValues contentValues = new ContentValues();
         contentValues.put("ObservationNumber", observnum);
         db.insert("CoefficientMeans", null, contentValues);
-        db.insert("CoefficientStandardDerivations", null, contentValues);
+        db.insert("StandardDeviations", null, contentValues);
         db.insert("Observations", null, contentValues);
         db.insert("Coefficients", null, contentValues);
         db.insert("Gradients", null, contentValues);
@@ -105,20 +110,23 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         contentValues.put("ObservationNumber", observnumn);
         contentValues.put("Datum", zeit);
         contentValues.put("Score", score);
-        long result = db.insert("PSSScores", null, contentValues);
+        long result = db.insert("Personalizations", null, contentValues);
         return result != -1;
     }
 
     public void addNewPrediction(int observnumn, double prediction) {
         SQLiteDatabase db = this.getWritableDatabase();
-        db.execSQL("UPDATE PSSScores SET Prediction = " + prediction + " WHERE ObservationNumber=" + (observnumn));
+        db.execSQL("UPDATE Personalizations SET Prediction = " + prediction + " WHERE ObservationNumber=" + (observnumn));
     }
 
-    public void addNewPredictionError(int observnumn, double predictionerror2) {
+    public void addNewPredictionError(int observnumn, double predictionerror1) {
         SQLiteDatabase db = this.getWritableDatabase();
-        double predictionerror1 = Math.sqrt(predictionerror2);
-        db.execSQL("UPDATE PSSScores SET Error = " + predictionerror1 + " WHERE ObservationNumber=" + (observnumn));
-        db.execSQL("UPDATE PSSScores SET Error2 = " + predictionerror2 + " WHERE ObservationNumber=" + (observnumn));
+        db.execSQL("UPDATE Personalizations SET Error = " + predictionerror1 + " WHERE ObservationNumber=" + (observnumn));
+    }
+
+    public void addNewPredictionErrorSquared(int observnumn, double predictionerror2) {
+        SQLiteDatabase db = this.getWritableDatabase();
+        db.execSQL("UPDATE Personalizations SET Error2 = " + predictionerror2 + " WHERE ObservationNumber=" + (observnumn));
     }
 
     public double getLastPSSScore() {
@@ -127,7 +135,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         //Log.d(TAG, "Öffne Datenbank");
         SQLiteDatabase db = this.getWritableDatabase();
         //Log.d(TAG, "SQLite Query...");
-        Cursor cursor = db.rawQuery("SELECT Score FROM PSSScores ORDER BY ObservationNumber DESC LIMIT 1", null);
+        Cursor cursor = db.rawQuery("SELECT Score FROM Personalizations ORDER BY ObservationNumber DESC LIMIT 1", null);
         //Log.d(TAG, "Query done...");
         cursor.moveToLast();
         score = cursor.getDouble(0);
@@ -142,7 +150,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         //Log.d(TAG, "Öffne Datenbank");
         SQLiteDatabase db = this.getWritableDatabase();
         //Log.d(TAG, "SQLite Query...");
-        Cursor cursor = db.rawQuery("SELECT Score FROM PSSScores WHERE ObservationNumber = " + observNumN, null);
+        Cursor cursor = db.rawQuery("SELECT Score FROM Personalizations WHERE ObservationNumber = " + observNumN, null);
         //Log.d(TAG, "Query done...");
         cursor.moveToLast();
         score = cursor.getDouble(0);
@@ -157,7 +165,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         //Log.d(TAG, "Öffne Datenbank");
         SQLiteDatabase db = this.getWritableDatabase();
         //Log.d(TAG, "SQLite Query...");
-        Cursor cursor = db.rawQuery("SELECT MAX(ObservationNumber) FROM PSSScores", null);
+        Cursor cursor = db.rawQuery("SELECT MAX(ObservationNumber) FROM Personalizations", null);
         //Log.d(TAG, "Query done...");
         cursor.moveToLast();
         amount = cursor.getInt(0);
@@ -207,25 +215,34 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         //Log.d(TAG, "Öffne Datenbank");
         SQLiteDatabase db = this.getWritableDatabase();
         Log.d(TAG, "Erstelle TestSensor Tabelle");
-        db.execSQL("CREATE TABLE IF NOT EXISTS TestSensor (_id INTEGER PRIMARY KEY AUTOINCREMENT, Timestamp DATETIME DEFAULT CURRENT_TIMESTAMP, testvalue REAL)");
-        db.execSQL("CREATE TABLE IF NOT EXISTS TestSensor2 (_id INTEGER PRIMARY KEY AUTOINCREMENT, Timestamp DATETIME DEFAULT CURRENT_TIMESTAMP, testvalue2 TEXT)");
+        db.execSQL("CREATE TABLE IF NOT EXISTS TestSensor1 (_id INTEGER PRIMARY KEY AUTOINCREMENT, Timestamp DATE NOT NULL, testvalue REAL)");
+        db.execSQL("CREATE TABLE IF NOT EXISTS TestSensor2 (_id INTEGER PRIMARY KEY AUTOINCREMENT, Timestamp DATE NOT NULL, testvalue TEXT)");
+        db.execSQL("CREATE TABLE IF NOT EXISTS TestSensor3 (_id INTEGER PRIMARY KEY AUTOINCREMENT, Timestamp DATE NOT NULL, testvalue REAL)");
     }
 
-    public boolean addNewTestSensorValues(long zeit, double value) {
+    public boolean addNewTimeTestSensorValues(String sensorname, String sensorvalue, double valuex) {
         SQLiteDatabase db = this.getWritableDatabase();
+        long time = System.currentTimeMillis();
+        Date timestamp = new Date(time);
+        Format format = new SimpleDateFormat("yyyy-MM-dd  HH:mm:ss");
+        format.format(timestamp);
         ContentValues contentValues = new ContentValues();
-        contentValues.put("Timestamp", zeit);
-        contentValues.put("testvalue", value);
-        long result = db.insert("TestSensor", null, contentValues);
+        contentValues.put("Timestamp", format.format(timestamp));
+        contentValues.put(sensorvalue, valuex);
+        long result = db.insert(sensorname, null, contentValues);
         return result != -1;
     }
 
-    public boolean addNewTestSensorValues2(long zeit, String value) {
+    public boolean addNewEventTestSensorValues(String sensorname, String sensorvalue, String valuex) {
         SQLiteDatabase db = this.getWritableDatabase();
+        long time = System.currentTimeMillis();
+        Date timestamp = new Date(time);
+        Format format = new SimpleDateFormat("yyyy-MM-dd  HH:mm:ss");
+        format.format(timestamp);
         ContentValues contentValues = new ContentValues();
-        contentValues.put("Timestamp", zeit);
-        contentValues.put("testvalue2", value);
-        long result = db.insert("TestSensor2", null, contentValues);
+        contentValues.put("Timestamp", format.format(timestamp));
+        contentValues.put(sensorvalue, valuex);
+        long result = db.insert(sensorname, null, contentValues);
         return result != -1;
     }
 
@@ -345,32 +362,32 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return oldmean;
     }
 
-    public double getOldStdDer(Coefficient c, int observNumN) {
-        Log.d(TAG, "Hole altes o von BeobachtungsNr:" + (observNumN - 1) + " (Funktion getOldStdDer) (Aktuelle Beob.Nr: " + observNumN);
-        double oldstdder;
+    public double getOldStdDev(Coefficient c, int observNumN) {
+        Log.d(TAG, "Hole altes o von BeobachtungsNr:" + (observNumN - 1) + " (Funktion getOldStdDev) (Aktuelle Beob.Nr: " + observNumN);
+        double oldstddev;
         if (observNumN > 1) {
             SQLiteDatabase db = this.getWritableDatabase();
             Log.d(TAG, "Spaltenname wo gelesen wird ist: " + c.name);
-            if (checkIfColumnExists(db, "CoefficientStandardDerivations", c.name) == false) {
+            if (checkIfColumnExists(db, "StandardDeviations", c.name) == false) {
                 Log.d(TAG, "Passende Spalte exisitiert nicht. Erstellen...");
-                db.execSQL("ALTER TABLE CoefficientStandardDerivations ADD COLUMN " + c.name + " REAL");
+                db.execSQL("ALTER TABLE StandardDeviations ADD COLUMN " + c.name + " REAL");
                 //Log.d(TAG, "Spalte erstellt.");
                 Log.d(TAG, "Da kein alter Wert vorhanden wird 0 returnt (Problematisch?!)");
                 return 0.0;
             } else {
                 Log.d(TAG, "Spalte für Beobachtung Nr.  existiert. Hole letzten Wert.");
-                Cursor cursor = db.rawQuery("SELECT " + c.name + " FROM CoefficientStandardDerivations WHERE ObservationNumber = " + (observNumN -1), null);
+                Cursor cursor = db.rawQuery("SELECT " + c.name + " FROM StandardDeviations WHERE ObservationNumber = " + (observNumN -1), null);
                 cursor.moveToLast();
-                oldstdder = cursor.getDouble(0);
-                Log.d(TAG, "Geholter alter o-Wert ist: " + oldstdder);
+                oldstddev = cursor.getDouble(0);
+                Log.d(TAG, "Geholter alter o-Wert ist: " + oldstddev);
                 cursor.close();
-                return oldstdder;
+                return oldstddev;
             }
         } else {
             Log.d(TAG, "Es ist die 1. Beobachtung, also gibt es noch kein altes o, gebe 0.0 zurück");
-            oldstdder = 0.0;
+            oldstddev = 0.0;
         }
-        return oldstdder;
+        return oldstddev;
     }
 
     public double getObservation(Coefficient c, int observNumN) {
@@ -411,16 +428,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("UPDATE CoefficientMeans SET " + c.name + " = " + valuex + " WHERE ObservationNumber=" + observNumN);
     }
 
-    public void addNewStdDer(Coefficient c, int observNumN, double valuex) {
-        Log.d(TAG, "addNewStdDer Methode gestartet");
+    public void addNewStdDev(Coefficient c, int observNumN, double valuex) {
+        Log.d(TAG, "addNewStdDev Methode gestartet");
         SQLiteDatabase db = this.getWritableDatabase();
-        if (checkIfColumnExists(db, "CoefficientStandardDerivations", c.name) == false) {
+        if (checkIfColumnExists(db, "StandardDeviations", c.name) == false) {
             Log.d(TAG, "Eine Solche Spalte exisitiert nicht. Erstellen...");
-            db.execSQL("ALTER TABLE CoefficientStandardDerivations ADD COLUMN " + c.name + " REAL");
+            db.execSQL("ALTER TABLE StandardDeviations ADD COLUMN " + c.name + " REAL");
             Log.d(TAG, "Spalte erstellt.");
         }
-        Log.d(TAG, "Füge neue StdDer ein in: " + c.name + " bei ObsNr " + observNumN + " mit Wert " + valuex);
-        db.execSQL("UPDATE CoefficientStandardDerivations SET " + c.name + " = " + valuex + " WHERE ObservationNumber=" + observNumN);
+        Log.d(TAG, "Füge neue StdDev ein in: " + c.name + " bei ObsNr " + observNumN + " mit Wert " + valuex);
+        db.execSQL("UPDATE StandardDeviations SET " + c.name + " = " + valuex + " WHERE ObservationNumber=" + observNumN);
     }
 
     public void addNewObservationValue(Coefficient c, int observNumN, double zvalue) {
@@ -469,13 +486,25 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     }
 
     public double checkGradientsAverages(int gradienttimewindow, int observnum) {
-        double value;
+        double min, max;
         SQLiteDatabase db = this.getWritableDatabase();
-        Cursor cursor = db.rawQuery("SELECT max(Average) FROM Gradients WHERE " + observnum + " >= " + (observnum - gradienttimewindow), null);
-        cursor.moveToLast();
-        value = cursor.getDouble(0);
-        cursor.close();
-        return value;
+        Cursor cursormax = db.rawQuery("SELECT max(Average) FROM Gradients WHERE " + observnum + " >= " + (observnum - gradienttimewindow), null);
+        Cursor cursormin = db.rawQuery("SELECT max(Average) FROM Gradients WHERE " + observnum + " >= " + (observnum - gradienttimewindow), null);
+        cursormax.moveToLast();
+        max = cursormax.getDouble(0);
+        max = Math.abs(max);
+        cursormax.close();
+        cursormin.moveToLast();
+        min = cursormin.getDouble(0);
+        min = Math.abs(min);
+        cursormin.close();
+        if (max >= min) {
+            return max;
+        }
+        else {
+            return min;
+        }
+
     }
 
     public void addNewGradientsAverage(double value, int observNumN) {
@@ -485,7 +514,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     public long getTimeOfLastPersonalization() {
         SQLiteDatabase db = this.getWritableDatabase();
-        Cursor cursor = db.rawQuery("SELECT Datum FROM PSSScores ORDER BY ObservationNumber DESC LIMIT 1", null);
+        Cursor cursor = db.rawQuery("SELECT Datum FROM Personalizations ORDER BY ObservationNumber DESC LIMIT 1", null);
         cursor.moveToLast();
         long ts = cursor.getLong(0);
 

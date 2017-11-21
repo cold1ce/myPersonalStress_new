@@ -73,7 +73,6 @@
                 android:value="com.fimrc.mypersonalstress.gui.MainMenu" />
         </activity>
 
-        <activity android:name="com.fimrc.mypersonalstress.gui.StressPrediction"></activity>
     </application>
 
 </manifest>
