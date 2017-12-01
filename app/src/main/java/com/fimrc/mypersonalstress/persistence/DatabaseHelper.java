@@ -296,6 +296,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         //Cursor cursor = db.rawQuery("SELECT AVG(" + value + ") FROM (SELECT " + value + " FROM " + sensor +" WHERE datetime(Timestamp) > datetime(current_timestamp, '"+timeframenew+" minutes') ORDER BY " + value + " LIMIT 2 - (SELECT COUNT(*) FROM " + sensor + ") % 2 OFFSET (SELECT (COUNT(*) - 1) / 2 FROM " + sensor + " WHERE datetime(Timestamp) > datetime(current_timestamp, '"+timeframenew+" minutes')",null);
         //Cursor cursor = db.rawQuery("SELECT AVG(" + value + ") FROM (SELECT " + value + " FROM " + sensor + " ORDER BY " + value + " LIMIT 2 - (SELECT COUNT(*) FROM " + sensor + ") % 2 OFFSET (SELECT (COUNT(*) - 1) / 2 FROM " + sensor + "))", null);
+        //Crazy Befehl
         Cursor cursor = db.rawQuery("SELECT AVG("+value+") FROM (SELECT "+value+" FROM "+sensor+" WHERE (datetime(Timestamp) > datetime(current_timestamp, '"+timeframenew+" minutes'))ORDER BY "+value+" LIMIT 2 - (SELECT COUNT(*) FROM "+sensor+" WHERE (datetime(Timestamp) > datetime(current_timestamp, '"+timeframenew+" minutes'))) % 2 OFFSET (SELECT (COUNT(*) - 1) / 2 FROM "+sensor+" WHERE (datetime(Timestamp) > datetime(current_timestamp, '"+timeframenew+" minutes'))))", null);
         cursor.moveToLast();
         max = cursor.getDouble(0);

@@ -7,21 +7,11 @@
 package com.fimrc.mypersonalstress.methods;
 
 import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
+
 import com.fimrc.mypersonalstress.coefficients.Coefficient;
 import com.fimrc.mypersonalstress.coefficients.CoefficientContainer;
 import com.fimrc.mypersonalstress.persistence.DatabaseHelper;
-import com.fimrc.mysensornetwork.R;
-import com.fimrc.mysensornetwork.gui.MainActivity;
-
-import static android.content.Context.MODE_PRIVATE;
 
 public class ObservationCalculation {
     private final String TAG = "ObservationCalculation"; //Tag-String für die Debug-Ausgabe
@@ -61,7 +51,7 @@ public class ObservationCalculation {
     //Aggregation ausgelesen und durchgeführt.
     public void calculateSingleObservation (Coefficient c, int observNum, int timeframe) {
         //Log.d(TAG, "Koeffizient empfangen ist: "+c.name+" mit der Beobachtungsnr.: "+observNum);
-        double newaggregationvalue = 0.0;
+        double newaggregationvalue = 0.0; // Zur Sicherheit 0 setzen
 
         //Log.d(TAG, "Hole Beobachtung unstandardisiert aus mSN-Datenbank...");
         if (c.transformation1 == "raw") {

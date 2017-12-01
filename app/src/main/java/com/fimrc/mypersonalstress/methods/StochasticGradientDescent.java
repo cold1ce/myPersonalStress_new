@@ -8,7 +8,6 @@
 package com.fimrc.mypersonalstress.methods;
 
 import android.content.Context;
-import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.fimrc.mypersonalstress.coefficients.Coefficient;
@@ -30,14 +29,14 @@ public class StochasticGradientDescent {
         for (int i=1; i<cc.coefficients.length; i++) {
 
             Log.d(TAG, "Rechne Ergebnis für: "+cc.coefficients[i].name);
-            predictionbuffer = predictionbuffer + skalarMe(cc.coefficients[i], observNumN);
+            predictionbuffer = predictionbuffer + predictSingleOutput(cc.coefficients[i], observNumN);
             Log.d(TAG,"Zwischenergebnis: "+predictionbuffer);
         }
         mpsDB.addNewPrediction(observNumN, predictionbuffer);
         return predictionbuffer;
     }
 
-    public double skalarMe(Coefficient c, int observNumN) {
+    public double predictSingleOutput(Coefficient c, int observNumN) {
         double part1 = mpsDB.getObservation(c, observNumN);
         Log.d(TAG, "Observationswert: "+part1);
         double part2 = mpsDB.getOldCoefficient(c, observNumN);
