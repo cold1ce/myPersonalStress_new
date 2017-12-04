@@ -52,6 +52,7 @@ public class MainMenu extends AppCompatActivity {
         final Button btn_add_high = (Button) findViewById(R.id.btn_add_high);
         final Button btn_add_random = (Button) findViewById(R.id.btn_add_random);
         final Button btn_add_x= (Button) findViewById(R.id.btn_add_x);
+        final Button btn_add_3600= (Button) findViewById(R.id.btn_add_3600);
 
         final EditText et_valuex = (EditText) findViewById(R.id.et_valuex);
 
@@ -130,6 +131,18 @@ public class MainMenu extends AppCompatActivity {
             }
         });
 
+        btn_add_3600.setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                msnDB.createTestSensorTable();
+                DateFormat df = DateFormat.getDateTimeInstance();
+                long aktuellezeit = new Date().getTime();
+                for (int i=0; i<3600; i++) {
+                    msnDB.addNewTimeTestSensorValues("TestSensor1", "testvalue", getZufallszahl(1, 500));
+                    Log.d(TAG, "Wert "+i+" angelegt.");
+                }
+            }
+        });
+
         btn_add_x.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 msnDB.createTestSensorTable();
@@ -138,7 +151,7 @@ public class MainMenu extends AppCompatActivity {
                 double value = Double.parseDouble(et_valuex.getText().toString());
                 //for (int i=0; i<10; i++) {
                     msnDB.addNewTimeTestSensorValues("TestSensor1", "testvalue", value);
-                    //msnDB.addNewTimeTestSensorValues("TestSensor3", "testvalue", getZufallszahl(95, 100));
+
 
                 //}
                 //for (int j=0; j<(int)(getZufallszahl(0, 3)); j++) {
