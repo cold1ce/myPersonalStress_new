@@ -1,28 +1,22 @@
-/**
- * DatabaseHelper
- * Hier finden sich alle für die App notwendigen Schreib-, Lese- und Datenbankberechnungsmethoden
- *
- */
-
+//DatabaseHelper.java
+//Hier finden sich alle für die App notwendigen Schreib-, Lese- und Datenbankberechnungsmethoden.
 
 package com.fimrc.mypersonalstress.persistence;
 
-        import android.content.ContentValues;
-        import android.content.Context;
-        import android.database.Cursor;
-        import android.database.sqlite.SQLiteDatabase;
-        import android.database.sqlite.SQLiteOpenHelper;
-        import android.util.Log;
-        import com.fimrc.mypersonalstress.coefficients.Coefficient;
-
-        import java.text.Format;
-        import java.text.SimpleDateFormat;
-        import java.util.Date;
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
+import com.fimrc.mypersonalstress.coefficients.Coefficient;
+import java.text.Format;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     public static final String TAG = "DatabaseHelper";
     public static Context context;
-    //public static final String DB_NAME = "mypersonalstress.db";
     public static final int DB_VERSION = 1;
     public static DatabaseHelper instance;
 
@@ -47,6 +41,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     }
 
+    //Erstellt alle Tabellen neu (z.B. bei Reset oder erstem Aufruf der App)
     public void createAllTables() {
         Log.d(TAG, "Erstelle alle Tabellen neu");
         SQLiteDatabase db = this.getWritableDatabase();
@@ -65,6 +60,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         //Log.d(TAG, "Coefficients erstellt/exisitiert.");
     }
 
+    //Setzt die Datenbank von myPersonalStress zurück.
     public void resetMPSDB() {
         SQLiteDatabase db = this.getWritableDatabase();
         //Log.d(TAG, "Datenbank geöffnet");
@@ -77,6 +73,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Log.d(TAG, "Alle Tabellen in der MPS Datenbank gelöscht.");
     }
 
+    //Setzt die Datenbank von mySensorNetwork zurück.
     public void resetMSNDB() {
         SQLiteDatabase db = this.getWritableDatabase();
         //Log.d(TAG, "Datenbank geöffnet");
@@ -86,6 +83,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         Log.d(TAG, "Alle Tabellen in der MSN Datenbank gelöscht.");
     }
 
+    //Fügt eine neue Zeile (Laufvariable observnum) in alle Tabellen ein
     public void addObservationCount(int observnum) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
@@ -97,6 +95,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.insert("Gradients", null, contentValues);
     }
 
+    //Fügt die Koeffizienten des allgemeinen Modells in die Datenbank ein
     public void addFirstCoefficientsRow() {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
@@ -104,6 +103,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.insert("Coefficients", null, contentValues);
     }
 
+    //Fügt das Ergebnis eines Fragebogens in die Datenbank ein.
     public boolean addNewPSSScore(int observnumn, long zeit, double score) {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
@@ -114,57 +114,50 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return result != -1;
     }
 
+    //Fügt eine neue Vorhersage hinzu.
     public void addNewPrediction(int observnumn, double prediction) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.execSQL("UPDATE Personalizations SET Prediction = " + prediction + " WHERE ObservationNumber=" + (observnumn));
     }
 
+    //Fügt einen neuen Vorhersagefehler hinzu.
     public void addNewPredictionError(int observnumn, double predictionerror1) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.execSQL("UPDATE Personalizations SET Error = " + predictionerror1 + " WHERE ObservationNumber=" + (observnumn));
     }
 
+    //Fügt einen neuen Vorhersagefehler(quadriert) hinzu.
     public void addNewPredictionErrorSquared(int observnumn, double predictionerror2) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.execSQL("UPDATE Personalizations SET Error2 = " + predictionerror2 + " WHERE ObservationNumber=" + (observnumn));
     }
 
+    //Gibt das zuletzt gespeicherte Fragebogenresultat zurück
     public double getLastPSSScore() {
-        //Log.d(TAG, "Methodenbeginn getLastPSSscore");
         double score = 0.0;
-        //Log.d(TAG, "Öffne Datenbank");
         SQLiteDatabase db = this.getWritableDatabase();
-        //Log.d(TAG, "SQLite Query...");
         Cursor cursor = db.rawQuery("SELECT Score FROM Personalizations ORDER BY ObservationNumber DESC LIMIT 1", null);
-        //Log.d(TAG, "Query done...");
         cursor.moveToLast();
         score = cursor.getDouble(0);
-        //Log.d(TAG, "Score abgerufen: "+score);
         cursor.close();
         return score;
     }
 
+    //Gibt ein bestimmtes gespeichertes Fragebogenresultat zurück
     public double getPSSScoreofObservationNumber(int observNumN) {
-        //Log.d(TAG, "Methodenbeginn getLastPSSscore");
         double score = 0.0;
-        //Log.d(TAG, "Öffne Datenbank");
         SQLiteDatabase db = this.getWritableDatabase();
-        //Log.d(TAG, "SQLite Query...");
         Cursor cursor = db.rawQuery("SELECT Score FROM Personalizations WHERE ObservationNumber = " + observNumN, null);
-        //Log.d(TAG, "Query done...");
         cursor.moveToLast();
         score = cursor.getDouble(0);
-        //Log.d(TAG, "Score abgerufen: "+score);
         cursor.close();
         return score;
     }
 
+    //Gibt zurück wieviele Durchgänge bereits erfolgt sind.
     public int getAmountofObservationsDoneYet() {
-        //Log.d(TAG, "Methodenbeginn getAmountofObservationsDoneYet");
         int amount = 0;
-        //Log.d(TAG, "Öffne Datenbank");
         SQLiteDatabase db = this.getWritableDatabase();
-        //Log.d(TAG, "SQLite Query...");
         Cursor cursor = db.rawQuery("SELECT MAX(ObservationNumber) FROM Personalizations", null);
         //Log.d(TAG, "Query done...");
         cursor.moveToLast();
@@ -174,45 +167,31 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return amount;
     }
 
+    //Fügt neu berechnete Koeffizienten, also ein neues Stressmodell in die Datenbank ein.
     public void addNewCoefficientValues(Coefficient c, int observNumN, double valuex) {
         Log.d(TAG, "addNewCoefficientMethode gestartet");
         SQLiteDatabase db = this.getWritableDatabase();
         if ((checkIfColumnExists(db, "Coefficients", c.name)) == false) {
-            Log.d(TAG, "Die passende Spalte exisitiert nicht. Erstellen...");
             db.execSQL("ALTER TABLE Coefficients ADD COLUMN " + c.name + " REAL");
-            //Log.d(TAG, "Spalte erstellt.");
         }
-
-        /*Log.d(TAG, "Es ist die Beobachtung Nr. "+observNumN);
-        if (observNumN == 1) {
-            Log.d(TAG, "Es ist die erste Beobachtung, schreibe also in Observation 0 die Koeffzizienten des GMs");
-            ContentValues contentValues = new ContentValues();
-            contentValues.put("ObservationNumber", observNumN-1);
-            db.insert("Coefficients", null, contentValues);
-        Log.d(TAG, "Füge neuen Standard Coefficient aus dem Gm ein in:"+c.name+" bei ObsNr "+(observNumN-1)+" mit Wert "+c.generalmodelvalue);
-        db.execSQL("UPDATE Coefficients SET "+c.name+" = "+c.generalmodelvalue+" WHERE ObservationNumber="+(observNumN-1));
-        }*/
-        //else {
         Log.d(TAG, "Füge Koeffizientenwert für " + c.name + " bei ObsNr " + (observNumN) + " mit Wert " + valuex + " ein");
         db.execSQL("UPDATE Coefficients SET " + c.name + " = " + valuex + " WHERE ObservationNumber=" + (observNumN));
-        // }
     }
 
+    //Fügt einen neuen Gradienten ein
     public void addNewGradient(Coefficient c, int observNumN, double valuex) {
         Log.d(TAG, "addNewGradientMethode gestartet");
         SQLiteDatabase db = this.getWritableDatabase();
         if ((checkIfColumnExists(db, "Gradients", c.name)) == false) {
-            Log.d(TAG, "Die passende Spalte exisitiert nicht. Erstellen...");
             db.execSQL("ALTER TABLE Gradients ADD COLUMN " + c.name + " REAL");
-            //Log.d(TAG, "Spalte erstellt.");
         }
         Log.d(TAG, "Füge Gradient für " + c.name + " bei ObsNr " + (observNumN) + " mit Wert " + valuex + " ein");
         db.execSQL("UPDATE Gradients SET " + c.name + " = " + valuex + " WHERE ObservationNumber=" + (observNumN));
 
     }
 
+    //Fügt eine TestSensor-Tabelle in mySensorNetwork ein
     public void createTestSensorTable() {
-        //Log.d(TAG, "Öffne Datenbank");
         SQLiteDatabase db = this.getWritableDatabase();
         Log.d(TAG, "Erstelle TestSensor Tabelle");
         db.execSQL("CREATE TABLE IF NOT EXISTS TestSensor1 (_id INTEGER PRIMARY KEY AUTOINCREMENT, Timestamp DATE NOT NULL, testvalue REAL)");
@@ -220,6 +199,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.execSQL("CREATE TABLE IF NOT EXISTS TestSensor3 (_id INTEGER PRIMARY KEY AUTOINCREMENT, Timestamp DATE NOT NULL, testvalue REAL)");
     }
 
+    //Fügt Testwerte für timebased Sensoren hinzu
     public boolean addNewTimeTestSensorValues(String sensorname, String sensorvalue, double valuex) {
         SQLiteDatabase db = this.getWritableDatabase();
         long time = System.currentTimeMillis();
@@ -233,6 +213,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return result != -1;
     }
 
+    //Fügt Testwerte für eventbased Sensoren hinzu
     public boolean addNewEventTestSensorValues(String sensorname, String sensorvalue, String valuex) {
         SQLiteDatabase db = this.getWritableDatabase();
         long time = System.currentTimeMillis();
@@ -246,11 +227,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return result != -1;
     }
 
-    public double getZufallszahl(int min, int max) {
-        double random = Math.random() * (max - min) + min;
-        return random;
-    }
-
+    //Aggregationsmethode für das Minimum
     public double getAggrMin(String sensor, String value, int timeframe) {
         double min;
         int timeframenew = 60-timeframe; //Zeitverschiebung 1h von UTC-Zeit
@@ -262,6 +239,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return min;
     }
 
+    //Aggregationsmethode für das Maximum
     public double getAggrMax(String sensor, String value, int timeframe) {
         double max;
         int timeframenew = 60-timeframe; //Zeitverschiebung 1h von UTC-Zeit
@@ -273,6 +251,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return max;
     }
 
+    //Aggregationsmethode für die Spannweite
     public double getAggrRange(String sensor, String value, int timeframe) {
         double max, min, range = 0.0;
         int timeframenew = 60-timeframe; //Zeitverschiebung 1h von UTC-Zeit
@@ -284,19 +263,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         cursor2.moveToLast();
         min = cursor2.getDouble(0);
         range = (max - min);
-        Log.d(TAG, "max: " + max + " min: " + min + " range: " + range);
+        //Log.d(TAG, "max: " + max + " min: " + min + " range: " + range);
         cursor.close();
         cursor2.close();
         return range;
     }
 
+    //Aggregationsmethode für den Median
     public double getAggrMedian(String sensor, String value, int timeframe) {
         double max;
         int timeframenew = 60-timeframe; //Zeitverschiebung 1h von UTC-Zeit
         SQLiteDatabase db = this.getWritableDatabase();
-        //Cursor cursor = db.rawQuery("SELECT AVG(" + value + ") FROM (SELECT " + value + " FROM " + sensor +" WHERE datetime(Timestamp) > datetime(current_timestamp, '"+timeframenew+" minutes') ORDER BY " + value + " LIMIT 2 - (SELECT COUNT(*) FROM " + sensor + ") % 2 OFFSET (SELECT (COUNT(*) - 1) / 2 FROM " + sensor + " WHERE datetime(Timestamp) > datetime(current_timestamp, '"+timeframenew+" minutes')",null);
-        //Cursor cursor = db.rawQuery("SELECT AVG(" + value + ") FROM (SELECT " + value + " FROM " + sensor + " ORDER BY " + value + " LIMIT 2 - (SELECT COUNT(*) FROM " + sensor + ") % 2 OFFSET (SELECT (COUNT(*) - 1) / 2 FROM " + sensor + "))", null);
-        //Crazy Befehl
+        //Crazy Befehl:
         Cursor cursor = db.rawQuery("SELECT AVG("+value+") FROM (SELECT "+value+" FROM "+sensor+" WHERE (datetime(Timestamp) > datetime(current_timestamp, '"+timeframenew+" minutes'))ORDER BY "+value+" LIMIT 2 - (SELECT COUNT(*) FROM "+sensor+" WHERE (datetime(Timestamp) > datetime(current_timestamp, '"+timeframenew+" minutes'))) % 2 OFFSET (SELECT (COUNT(*) - 1) / 2 FROM "+sensor+" WHERE (datetime(Timestamp) > datetime(current_timestamp, '"+timeframenew+" minutes'))))", null);
         cursor.moveToLast();
         max = cursor.getDouble(0);
@@ -304,6 +282,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return max;
     }
 
+    //Aggregationsmethode für den Mittelwert
     public double getAggrMean(String sensor, String value, int timeframe) {
         double mean;
         int timeframenew = 60-timeframe; //Zeitverschiebung 1h von UTC-Zeit
@@ -315,6 +294,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return mean;
     }
 
+    //Aggregationsmethode für die Anzahl an Einträgen
     public double getAggrCount(String sensor, String value, int timeframe) {
         int timeframenew = 60-timeframe; //Zeitverschiebung 1h von UTC-Zeit
         int count = 0;
@@ -326,7 +306,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return count;
     }
 
-    public void createCoeffColumn(String sensor, String value, int observationnr, String trans1, String trans2, String aggregation) {
+    /*public void createCoeffColumn(String sensor, String value, int observationnr, String trans1, String trans2, String aggregation) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.execSQL("ALTER TABLE CoefficientsValues ADD COLUMN " + sensor + "." + value + "." + trans1 + "." + trans2 + "." + aggregation + " REAL", null);
     }
@@ -335,25 +315,21 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues contentValues = new ContentValues();
         contentValues.put(sensor + "." + value + "." + trans1 + "." + trans2 + "." + aggregation, coefficientvalue);
-    }
+    }*/
 
+    //Gibt den letzten Mittelwert des Koeffizienten zurück.
     public double getOldMean(Coefficient c, int observNumN) {
         double oldmean = 0.0;
         if (observNumN > 1) {
             Log.d(TAG, "Hole altes u von BeobachtungsNr:" + (observNumN - 1) + " (Funktion getOldMean) (Aktuelle Beob.Nr: " + observNumN);
             SQLiteDatabase db = this.getWritableDatabase();
-            //Log.d(TAG, "Spaltenname welcher gelesen wird ist: " + c.name);
             if (checkIfColumnExists(db, "CoefficientMeans", c.name) == false) {
-                Log.d(TAG, "Passende Spalte exisitiert nicht. Erstellen...");
                 db.execSQL("ALTER TABLE CoefficientMeans ADD COLUMN " + c.name + " REAL");
-                //Log.d(TAG, "Spalte erstellt.");
-
             } else {
                 Log.d(TAG, "Spalte für Beobachtung Nr." + observNumN + " existiert. Hole letzten Wert.");
                 Cursor cursor = db.rawQuery("SELECT " + c.name + " FROM CoefficientMeans WHERE ObservationNumber = " + (observNumN -1), null);
                 cursor.moveToLast();
                 oldmean = cursor.getDouble(0);
-                //Log.d(TAG, "Geholter alter u-Wert ist: " + oldmean);
                 cursor.close();
             }
         } else {
@@ -363,20 +339,16 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return oldmean;
     }
 
+    ////Gibt die letzte Standardabweichung des Koeffizienten zurück.
     public double getOldStdDev(Coefficient c, int observNumN) {
         Log.d(TAG, "Hole altes o von BeobachtungsNr:" + (observNumN - 1) + " (Funktion getOldStdDev) (Aktuelle Beob.Nr: " + observNumN);
         double oldstddev;
         if (observNumN > 1) {
             SQLiteDatabase db = this.getWritableDatabase();
-            Log.d(TAG, "Spaltenname wo gelesen wird ist: " + c.name);
             if (checkIfColumnExists(db, "StandardDeviations", c.name) == false) {
-                Log.d(TAG, "Passende Spalte exisitiert nicht. Erstellen...");
                 db.execSQL("ALTER TABLE StandardDeviations ADD COLUMN " + c.name + " REAL");
-                //Log.d(TAG, "Spalte erstellt.");
-                Log.d(TAG, "Da kein alter Wert vorhanden wird 0 returnt (Problematisch?!)");
                 return 0.0;
             } else {
-                Log.d(TAG, "Spalte für Beobachtung Nr.  existiert. Hole letzten Wert.");
                 Cursor cursor = db.rawQuery("SELECT " + c.name + " FROM StandardDeviations WHERE ObservationNumber = " + (observNumN -1), null);
                 cursor.moveToLast();
                 oldstddev = cursor.getDouble(0);
@@ -391,6 +363,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return oldstddev;
     }
 
+    //Rufe Sensorwert (Beobachtung) auf
     public double getObservation(Coefficient c, int observNumN) {
         Log.d(TAG, "Hole Observation:" + (c.name) + " (Funktion getObservation) (Aktuelle Beob.Nr: " + observNumN);
         double observ;
@@ -404,55 +377,52 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return observ;
     }
 
+    //Ruft den aktuellen Koeffizienten ab
     public double getOldCoefficient(Coefficient c, int observNumN) {
         Log.d(TAG, "Hole bisherigen Koeffizient:" + c.name + " (Funktion getCoefficient) (Aktuelle Beob.Nr: " + observNumN + " Koeffizient aus Nr. " + (observNumN - 1));
         double oldcoeff;
         SQLiteDatabase db = this.getWritableDatabase();
-        Log.d(TAG, "Spaltenname wo gelesen wird ist: " + c.name);
         Cursor cursor = db.rawQuery("SELECT " + c.name + " FROM Coefficients WHERE ObservationNumber = " + (observNumN -1), null);
         cursor.moveToLast();
         oldcoeff = cursor.getDouble(0);
-        Log.d(TAG, "Geholter OKoeffizienten-Wert ist: " + oldcoeff);
+        //Log.d(TAG, "Geholter OKoeffizienten-Wert ist: " + oldcoeff);
         cursor.close();
         return oldcoeff;
     }
 
+    //Fügt einen neuen Mittelwert hinzu
     public void addNewMean(Coefficient c, int observNumN, double valuex) {
         Log.d(TAG, "addNewMean Methode gestartet");
         SQLiteDatabase db = this.getWritableDatabase();
         if (checkIfColumnExists(db, "CoefficientMeans", c.name) == false) {
-            Log.d(TAG, "Eine Solche Spalte exisitiert nicht. Erstellen...");
             db.execSQL("ALTER TABLE CoefficientMeans ADD COLUMN " + c.name + " REAL");
-            Log.d(TAG, "Spalte erstellt.");
         }
         Log.d(TAG, "Füge neuen Mean ein in:" + c.name + " bei ObsNr " + observNumN + " mit Wert " + valuex);
         db.execSQL("UPDATE CoefficientMeans SET " + c.name + " = " + valuex + " WHERE ObservationNumber=" + observNumN);
     }
 
+    //Fügt eine neue Standardabweichung ein
     public void addNewStdDev(Coefficient c, int observNumN, double valuex) {
         Log.d(TAG, "addNewStdDev Methode gestartet");
         SQLiteDatabase db = this.getWritableDatabase();
         if (checkIfColumnExists(db, "StandardDeviations", c.name) == false) {
-            Log.d(TAG, "Eine Solche Spalte exisitiert nicht. Erstellen...");
             db.execSQL("ALTER TABLE StandardDeviations ADD COLUMN " + c.name + " REAL");
-            Log.d(TAG, "Spalte erstellt.");
         }
         Log.d(TAG, "Füge neue StdDev ein in: " + c.name + " bei ObsNr " + observNumN + " mit Wert " + valuex);
         db.execSQL("UPDATE StandardDeviations SET " + c.name + " = " + valuex + " WHERE ObservationNumber=" + observNumN);
     }
 
+    //Fügt neuen Sensorwert in die Datenbank ein
     public void addNewObservationValue(Coefficient c, int observNumN, double zvalue) {
-        Log.d(TAG, "addNewObservationValue Methode gestartet");
         SQLiteDatabase db = this.getWritableDatabase();
         if (checkIfColumnExists(db, "Observations", c.name) == false) {
-            Log.d(TAG, "Eine Solche Spalte exisitiert nicht. Erstellen...");
             db.execSQL("ALTER TABLE Observations ADD COLUMN " + c.name + " REAL");
-            Log.d(TAG, "Spalte erstellt.");
         }
         Log.d(TAG, "Füge neuen Standardisierten Wert ein in:" + c.name + " bei ObsNr " + observNumN + " mit Wert " + zvalue);
         db.execSQL("UPDATE Observations SET " + c.name + " = " + zvalue + " WHERE ObservationNumber=" + observNumN);
     }
 
+    /*
     public double updateStandardDeviation(double x, double u, int N, double o) {
         System.out.println("übergeben: x:" + x + " u: " + u + " N: " + N + " o: " + o);
         double zaehlerpart1 = (N + 1);
@@ -465,8 +435,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         System.out.println("o-Berechnungen||Zähler: " + zaehler + " Nenner: " + nenner);
         double onew = Math.sqrt(zaehler / nenner);
         return onew;
-    }
+    }*/
 
+    //Überprüft ob Tabellenspalte bereits vorhanden ist
     public boolean checkIfColumnExists(SQLiteDatabase db, String tableName, String columnName) {
         boolean result = false;
         Cursor cursor = null;
@@ -486,6 +457,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         return result;
     }
 
+    //Prüft die Abbruchsbedingung des Gradientenschnitts
     public double checkGradientsAverages(int gradienttimewindow, int observnum) {
         double min, max;
         SQLiteDatabase db = this.getWritableDatabase();
@@ -508,18 +480,18 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     }
 
+    //Fügt für aktuelle Gradienten einen neuen Schnitt hinzu
     public void addNewGradientsAverage(double value, int observNumN) {
         SQLiteDatabase db = this.getWritableDatabase();
         db.execSQL("UPDATE Gradients SET Average = " + value + " WHERE ObservationNumber=" + (observNumN));
     }
 
+    //Rufe Zeit ab, wann zuletzt ein Personalisierungsvorgang durchgeführt wurde.
     public long getTimeOfLastPersonalization() {
         SQLiteDatabase db = this.getWritableDatabase();
         Cursor cursor = db.rawQuery("SELECT Datum FROM Personalizations ORDER BY ObservationNumber DESC LIMIT 1", null);
         cursor.moveToLast();
         long ts = cursor.getLong(0);
-
-
         return ts;
     }
 

@@ -16,6 +16,7 @@
         <item>sicher mit Ihren Aufgaben oder Problemen umgehen zu können?</item>
         <item>wichtige Dinge in Ihrem Leben nicht beeinflussen zu können?</item>
     </string-array>
+    <string name="title_activity_developer_menu">DeveloperMenu</string>
 
 
 </resources>

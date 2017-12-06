@@ -1,9 +1,13 @@
-package com.fimrc.mypersonalstress.coefficients;
+// Coefficient.java
 
-//Stellt einen Koeffizienten dar, welcher für das Stressmodel verwendet wird.
+//Stellt einen Koeffizienten einer Senssorvariable dar, also den Zusammenhang dieser Sensorvariable
+//mit Stress.
 //Anhand von Sensorname, Sensorwert sowie den Transformationen und der Aggregation wird
-//ein eindeutiger Name für jeden Koeffizienten generiert und in der Personalisierung die
+//ein eindeutiger Name für jeden Koeffizienten generiert und in der Personalisierung dadurch die
 //entsprechenden Methoden durchgeführt.
+//In dieser Klasse muss nichts verändert werden, sie ist der "Bauplan" für Coefficient-Objekte.
+
+package com.fimrc.mypersonalstress.coefficients;
 
 public class Coefficient {
     public String sensorname, sensorvalue, transformation1, transformation2, aggregation, name;

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.fimrc.mypersonalstress.gui.mainmenu">
+    tools:context="com.fimrc.mypersonalstress.gui.MainMenu">
 
     <Button
         android:id="@+id/btn_personalize"
@@ -46,80 +46,26 @@
         app:layout_constraintTop_toBottomOf="@+id/btn_settings" />
 
     <Button
-        android:id="@+id/btn_add_x"
-        android:layout_width="261dp"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginStart="8dp"
-        android:text="add value x "
-        app:layout_constraintBottom_toTopOf="@+id/btn_add_low"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <Button
-        android:id="@+id/btn_add_low"
-        android:layout_width="261dp"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginStart="8dp"
-        android:text="Add niedrige Stresswerte"
-        app:layout_constraintBottom_toTopOf="@+id/btn_add_high"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <Button
-        android:id="@+id/btn_add_high"
-        android:layout_width="261dp"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginStart="8dp"
-        android:text="Add Hohe Stresswerte"
-        app:layout_constraintBottom_toTopOf="@+id/btn_add_random"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <Button
-        android:id="@+id/btn_add_random"
-        android:layout_width="261dp"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginStart="8dp"
-        android:text="Add Random Werte"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <Button
-        android:id="@+id/btn_reset"
+        android:id="@+id/btn_dev"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
         android:layout_marginStart="8dp"
-        android:text="RESET"
-        android:textColor="@android:color/holo_red_dark"
-        android:textSize="18dp"
+        android:text="Entwickler"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:adjustViewBounds="true"
+        android:alpha="0.2"
+        android:src="@drawable/stress"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/btn_add_low" />
-
-    <EditText
-        android:id="@+id/et_valuex"
-        android:layout_width="68dp"
-        android:layout_height="43dp"
-        android:layout_marginEnd="12dp"
-        android:layout_marginTop="8dp"
-        android:ems="10"
-        android:inputType="numberDecimal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btn_impress" />
-
-    <Button
-        android:id="@+id/btn_add_3600"
-        android:layout_width="91dp"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:text="Button"
-        app:layout_constraintBottom_toTopOf="@+id/btn_reset"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/btn_add_high" />
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </android.support.constraint.ConstraintLayout>

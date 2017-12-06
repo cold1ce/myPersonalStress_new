@@ -47,32 +47,55 @@
 
         <service android:name=".SensorService" />
 
-        <activity android:name="com.fimrc.mypersonalstress.gui.MainMenu" />
-
-        <activity android:name="com.fimrc.mypersonalstress.gui.StressQuestionnaire">
+        <activity
+            android:name="com.fimrc.mypersonalstress.gui.MainMenu"
+            android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.fimrc.mypersonalstress.gui.MainMenu" />
         </activity>
-
-        <activity android:name="com.fimrc.mypersonalstress.gui.Personalization">
+        <activity
+            android:name="com.fimrc.mypersonalstress.gui.StressQuestionnaire"
+            android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.fimrc.mypersonalstress.gui.MainMenu" />
         </activity>
-
-        <activity android:name="com.fimrc.mypersonalstress.gui.Settings">
+        <activity
+            android:name="com.fimrc.mypersonalstress.gui.Personalization"
+            android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.fimrc.mypersonalstress.gui.MainMenu" />
         </activity>
-
-        <activity android:name="com.fimrc.mypersonalstress.gui.PersonalizationMenu">
+        <activity
+            android:name="com.fimrc.mypersonalstress.gui.Settings"
+            android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.fimrc.mypersonalstress.gui.MainMenu" />
         </activity>
-
+        <activity
+            android:name="com.fimrc.mypersonalstress.gui.PersonalizationMenu"
+            android:theme="@style/AppTheme">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.fimrc.mypersonalstress.gui.MainMenu" />
+        </activity>
+        <activity
+            android:name="com.fimrc.mypersonalstress.gui.DeveloperMenu"
+            android:theme="@style/AppTheme">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.fimrc.mypersonalstress.gui.MainMenu" />
+        </activity>
+        <activity
+            android:name="com.fimrc.mypersonalstress.gui.Impress"
+            android:theme="@style/AppTheme">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.fimrc.mypersonalstress.gui.MainMenu" />
+        </activity>
     </application>
 
 </manifest>

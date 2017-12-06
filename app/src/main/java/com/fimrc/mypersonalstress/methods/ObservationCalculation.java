@@ -1,8 +1,7 @@
-/**
- *  ObservationCalculation
- * Hier wird das Abrufen neuer aggregierter Sensorwerte durchgeführt, welche standardisiert abgespeichert
- * werden
- */
+//ObservationCalculation.java
+
+//Hier wird das Abrufen neuer aggregierter Sensorwerte durchgeführt, welche standardisiert abgespeichert
+//werden.
 
 package com.fimrc.mypersonalstress.methods;
 
@@ -78,7 +77,7 @@ public class ObservationCalculation {
                 }
             }
         }
-        Log.d(TAG, "!!!!!!!!!!!!!!Wert "+newaggregationvalue+" wurde gelesen für "+c.name);
+        Log.d(TAG, "Wert "+newaggregationvalue+" wurde gelesen für "+c.name);
         standardisizeAggrValue(c, newaggregationvalue, observNum);
        // mpsDB.addNewCoefficientValues(c,)
     }
@@ -114,41 +113,13 @@ public class ObservationCalculation {
     //Berechnen eines neuen Durchschnitts der jeweiligen Sensor-Beobachtung
     //Erforderlich für die durchzuführende Standardisierung.
     public double calcNewMean (double x, double u, int N) {
-        //Log.d(TAG, "Berechne neues u:"+u+"+(("+x+"-"+u+")/"+N+")");
         double unew = u+((x-u)/N);
-        //Log.d(TAG, "Neues u: "+unew);
         if (Double.isNaN(unew) == true) {
             unew = 0.0;
         }
-        //Log.d(TAG, "Wert runden...");
         unew = Math.round(unew * 10000000000.0) / 10000000000.0;
-        //Log.d(TAG, "Neuer Wert: "+unew);
         return unew;
     }
-
-    //Berechnen einer neuen Standard-Abweichung der jeweiligen Sensor-Beobachtung
-    //Erforderlich für die durchzuführende Standardisierung.
-    /*public double calcNewStdDevALT (double x, double u, int N, double o) {
-        Log.d(TAG, "Berechne neue StdDev mit den übergebenen Werten x:"+x+" u: "+u+" N: "+N+" o: "+o);
-        N = N-1;
-        double zaehlerpart1 = (N+1);
-        double zaehlerpart2 = Math.pow(x, 2)+N*(Math.pow(o, 2)+Math.pow(u, 2));
-        //System.out.println("x+n*u ist: "+(x+N*u));
-        double zaehlerpart3 = Math.pow((x+(N*u)), 2);
-        double zaehler = zaehlerpart1*zaehlerpart2-zaehlerpart3;
-        //System.out.println("o-Berechnungen||Part1: "+zaehlerpart1+" - Part2: "+zaehlerpart2+" - Part3: "+zaehlerpart3);
-        double nenner = Math.pow((N+1), 2);
-        //System.out.println("o-Berechnungen||Zähler: "+zaehler+" Nenner: "+nenner);
-        double onew = Math.sqrt(zaehler/nenner);
-        //Log.d(TAG, "Die neue StdDev bzw o ist: "+onew);
-        if (Double.isNaN(onew) == true) {
-            onew = 0.0;
-        }
-        //Log.d(TAG, "Wert runden...");
-        onew = Math.round(onew * 10000000000.0) / 10000000000.0;
-        Log.d(TAG, "Neue StdDev: "+onew);
-        return onew;
-    }*/
 
     //Berechnen einer neuen Standard-Abweichung der jeweiligen Sensor-Beobachtung
     //Erforderlich für die durchzuführende Standardisierung.
@@ -180,23 +151,14 @@ public class ObservationCalculation {
         }
     }
 
-
     //Mathematische Standardisierungsmethode
     public double standardizise(double x, double u, double o, int N) {
         double z;
         Log.d(TAG, "Standardisierung gestartet, mit x: "+x+" u: "+u+" o: "+o+" N: "+N);
-        //double unew = u+((x-u)/(N+1));
-        //Log.d(TAG, "Neues u: "+unew);
-        //double onew = Math.sqrt(((N+1)*(Math.pow(x, 2)+N*(Math.pow(o, 2)+Math.pow(u, 2)))-(Math.pow((x+(N*u)), 2)))/(Math.pow((N+1), 2)));
-        //Log.d(TAG, "Neues o: "+onew);
-        //double z = ((x-unew)/onew);
-        //Log.d(TAG, "z-Wert(Standardisierte Beobachtung): "+z);
         z = (x-u)/o;
-
         if (Double.isNaN(z) == true) {
             z = 0.0;
         }
-        //Log.d(TAG, "Wert runden...");
         z = Math.round(z * 10000000000.0) / 10000000000.0;
         Log.d(TAG, "Neuer z-Wert: "+z);
         return z;

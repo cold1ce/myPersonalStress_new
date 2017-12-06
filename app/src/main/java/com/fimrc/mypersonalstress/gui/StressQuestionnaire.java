@@ -1,10 +1,10 @@
-//StressQuestionnaire
+//StressQuestionnaire.java
+
 //Hier werden über eine Bedienoberfläche die gewünschten Fragen zum Stresslevel gestellt und
 //der daraus resultierende Wert in die Datenbank gespeichert.
 
 package com.fimrc.mypersonalstress.gui;
 
-//Import der benötigten Klassen
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
@@ -44,7 +44,7 @@ public class StressQuestionnaire extends AppCompatActivity {
 
         //Initialisieren der GUI mit den entsprechenden Komponenten
         setContentView(R.layout.activity_stress_questionnaire);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         final SharedPreferences prefs = getSharedPreferences("mps_preferences", MODE_PRIVATE);
         this.setTitle("Personalisierung");
@@ -172,7 +172,7 @@ public class StressQuestionnaire extends AppCompatActivity {
 
 
             Intent intent=new Intent();
-            intent.putExtra("MESSAGE", 1);
+            intent.putExtra("continue", 1);
             setResult(1,intent);
             finish();//Beenden der Aktivität
 

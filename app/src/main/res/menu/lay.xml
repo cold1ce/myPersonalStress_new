@@ -4,8 +4,8 @@
 
     <item
         android:id="@+id/personalization"
-        android:title="Personalisierung" />
+        android:title="myPersonalStress" />
     <item
         android:id="@+id/sensorsettings"
-        android:title="Sensoreinstellungen" />
+        android:title="mySensorNetwork" />
 </menu>
